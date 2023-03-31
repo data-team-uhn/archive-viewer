@@ -1,11 +1,29 @@
 {
   "url": "https://dhp-archive.dev.uhn.io/graphql?query=",
-  "defaultQueryFields" : [
-    {
+  "requiredFields" : [{
+    "min": 1,
+    "fields" : [{
       "name": "mrn",
-      "label": "MRN",
-      "type": {"name": "String"},
-      "required" : true
-    }
-  ]
+      "label": "MRN"
+    }, {
+      "name": "healthCardNumber"
+    }]
+  }, {
+    "min": 3,
+    "fields": [{
+      "name": "firstName"
+    }, {
+      "name": "lastName"
+    }, {
+      "name": "dateOfBirth",
+      "type": {"name": "Date"}
+    }, {
+      "name": "sex",
+      "type": {"name":"Enum", "options": ["M","F","O"]}
+    }]
+  }],
+  "optionalFields" : [{
+    "name": "created",
+    "type": {"name" : "DateRange"}
+  }]
 }

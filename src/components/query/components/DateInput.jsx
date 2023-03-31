@@ -38,7 +38,6 @@ let DateInput = (props) => {
       {...props}
       pickerComponent={DatePicker}
       format={dateFormat}
-      sx={{maxWidth: "170px"}}
       toString={toString}
     />
   );

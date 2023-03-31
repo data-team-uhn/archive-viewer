@@ -31,7 +31,7 @@ import dayjs from 'dayjs';
 // Customized by the DateRangeInput and TimeRangeInput components
 // to be called via the QueryComponentManager in the QueryForm
 let DateTimeRangeInput = (props) => {
-  let { pickerComponent, dateFormat, toString, sx, label, onChange, value, ...rest } = props;
+  let { pickerComponent, dateFormat, toString, label, onChange, value, ...rest } = props;
 
   const [ start, setStart ] = useState(null);
   const [ end, setEnd ] = useState(null);
@@ -57,33 +57,41 @@ let DateTimeRangeInput = (props) => {
     }
   }
 
-  return (
+  const commonProps = {
+    sx: {width: 210, minWidth: "100%"},
+    format: dateFormat,
+    disableFuture: true,
+  };
+
+  // Wrap the Grid container a div to make sure the Grid layout is not messed up
+  // when rendered as a child of a Stack
+  return (<div>
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Grid container alignItems="center" direction="row" spacing={1} wrap="wrap">
-        <Grid item sx={sx} >
+        <Grid item xs={true}>
           <PickerComponent
-            format={dateFormat}
             label={`${label} after`}
             value={start}
             onChange={value => handleChange(value, setStart)}
             maxDate={end}
+            {...commonProps}
             {...rest}
           />
         </Grid>
         <Grid item>—</Grid>
-        <Grid item sx={sx} >
+        <Grid item xs={true}>
           <PickerComponent
-            format={dateFormat}
             label={`${label} before`}
             value={end}
             onChange={value => handleChange(value, setEnd)}
             minDate={start}
+            {...commonProps}
             {...rest}
           />
         </Grid>
       </Grid>
     </LocalizationProvider>
-  )
+  </div>)
 }
 
 DateTimeRangeInput.propTypes = {

@@ -22,6 +22,9 @@ import React, { useEffect, useState } from "react";
 import { DataGrid } from '@mui/x-data-grid';
 
 import {
+  Card,
+  CardContent,
+  CardHeader,
   LinearProgress,
   Stack,
 } from "@mui/material";
@@ -106,16 +109,18 @@ export default function Results (props) {
   // Rendering
   //
   return (columns && <>
-    <Stack spacing={6} direction="column">
-      <SectionDivider
-        color={rows ? rows.length ? undefined : "error" : "secondary"}
-        title={`${rows ? rows.length || "No" : "Fetching"} results for `}
-        tags={Object.entries(query?.[QUERY_FIELD] || {}).map(([k, v]) => (camelCaseToWords(k) + ": " + v))}
-      />
+    <Card>
+      <CardHeader title={
+        <SectionDivider
+          color={rows ? rows.length ? undefined : "error" : "secondary"}
+          title={`${rows ? rows.length || "No" : "Fetching"} result${rows?.length === 1 ? '' : 's'}`}
+        />
+      } />
+      <CardContent>
       { rows?.length ?
-        <>
-          { resultsIntro && <FormattedText>{ resultsIntro }</FormattedText> }
-          <div style={{ height: 400, width: '100%' }}>
+        <Stack spacing={3}>
+          { resultsIntro && <FormattedText variant="body2">{ resultsIntro }</FormattedText> }
+          <div style={{ height: 400, width: '100%'}}>
             <DataGrid
               rows={rows}
               columns={columns}
@@ -126,16 +131,17 @@ export default function Results (props) {
               onRowClick={params => setCrtRecordId(params.id)}
             />
           </div>
-        </>
+        </Stack>
         : !rows && <LinearProgress color="secondary" />
       }
-    </Stack>
+      </CardContent>
+    </Card>
     { typeof(crtRecordId) != "undefined" &&
       <RecordViewer
         open={typeof(crtRecordId) != "undefined"}
         onClose={() => setCrtRecordId()}
         dataSource={camelCaseToWords(queryDefinition?.name)}
-        id={crtRecordId + 1}
+        id={`${crtRecordId + 1}`}
         data={rows?.[crtRecordId]}
         fieldsDefinition={columns}
         query={query?.[QUERY_FIELD]}

@@ -24,7 +24,7 @@ import {
 } from "@mui/material";
 
 import { camelCaseToWords } from "./utils/utils";
-import QueryForm from "./query/QueryForm";
+import Query from "./query/Query";
 import Results from "./views/Results";
 
 import QueryConfig from "../config/queryConfig.json";
@@ -106,9 +106,9 @@ export default function ArchiveViewer (props) {
 
   return (
     <Stack spacing={6} direction="column">
-      <QueryForm
-        queryDefinitions={queryDefinitions}
-        onQueryDefinitionSelected={(newValue) => {
+      <Query
+        dataSources={queryDefinitions}
+        onDataSourceSelected={(newValue) => {
           setCrtQueryDefinition(newValue);
           setCrtQuery();
         }}

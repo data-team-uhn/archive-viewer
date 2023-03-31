@@ -24,13 +24,13 @@ import { Chip, Divider, Typography } from "@mui/material";
 let SectionDivider = (props) => {
   let { title, tags, color, ...dividerProps } = props;
 
-  const titlePieces = title.split("@{tags}");
+  const titlePieces = (title || '').split("@{tags}");
 
   return (
     <Divider {...dividerProps}>
-       <Typography variant="overline" color={color}>
+       <Typography variant="overline" color={color} sx={{fontWeight: "bold"}}>
        { titlePieces[0] } { tags?.map(
-           t => <Chip key={t} label={t} size="small" color={color} sx={{mx: .5}}/>)
+           t => <Chip key={t} label={t} size="small" color={color}/>)
        } { titlePieces.slice(1).join('') }
        </Typography>
     </Divider>
@@ -38,7 +38,7 @@ let SectionDivider = (props) => {
 }
 
 SectionDivider.propTypes = {
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string,
   tags: PropTypes.arrayOf(PropTypes.string),
   color: PropTypes.string,
 }

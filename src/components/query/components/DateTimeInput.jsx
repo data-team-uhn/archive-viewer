@@ -53,6 +53,7 @@ let DateTimeInput = (props) => {
         value={date}
         format={format}
         onChange={handleChange}
+        disableFuture
         {...rest}
       />
     </LocalizationProvider>

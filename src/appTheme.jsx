@@ -17,6 +17,7 @@
 //  under the License.
 //
 import { createTheme } from '@mui/material/styles';
+import { lighten } from '@mui/material';
 
 const primaryColor = "#106DB5"; // "#0bf" for dark mode
 const secondaryColor = "#c6934b";
@@ -55,6 +56,18 @@ const appTheme = createTheme({
         },
       },
     },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          margin: "4px",
+        },
+        filledPrimary: {
+          color: primaryColor,
+          backgroundColor: lighten(primaryColor, .8),
+          fontWeight: "500",
+        },
+      },
+    },
     MuiTextField: {
       defaultProps: {
         size: "small",
@@ -68,10 +81,44 @@ const appTheme = createTheme({
         },
       },
     },
+    MuiButtonBase: {
+      defaultProps: {
+        size: "small",
+      },
+      styleOverrides: {
+        root: {
+          whiteSpace: "noWrap",
+        },
+      },
+    },
     MuiDialogTitle: {
       styleOverrides: {
         root: {
           paddingRight: "40px",
+        },
+      },
+    },
+    MuiCard: {
+      defaultProps: {
+        elevation: 0,
+      },
+    },
+    MuiCardHeader: {
+      defaultProps: {
+        disableTypography: true,
+      },
+      styleOverrides: {
+        root: {
+          paddingBottom: 0,
+        },
+      },
+    },
+    MuiCardActions: {
+      styleOverrides: {
+        root: {
+          justifyContent: "end",
+          paddingTop: 0,
+          paddingRight: "16px",
         },
       },
     },

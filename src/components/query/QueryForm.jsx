@@ -17,96 +17,45 @@
 //  under the License.
 //
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 import {
   Autocomplete,
-  Button,
-  CircularProgress,
-  Grid,
   InputAdornment,
   TextField,
 } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
 
-import FormattedText from "../utils/FormattedText";
 import InfoDisplay from "../utils/InfoDisplay";
 import { camelCaseToWords } from "../utils/utils";
+
+// Layout helpers
+import {
+  QueryFieldset,
+  QuerySection,
+  QueryFormContainer,
+} from "./QueryFormLayout";
 
 // Import the QueryComponentManager
 import QueryComponentManager from "./QueryComponentManager";
 // Register all the available query field components to the manager
 import "./QueryComponents";
 
-import QueryConfig from "../../config/queryConfig.json";
-import dbDescriptions from "../../config/dbDescriptions.json";
-// Todo: remove dbDescriptions.json ^ once we start receiving them from the server
-
 import queryIntro from "../../docs/query.md";
 
 export default function QueryForm (props) {
-  const { queryDefinitions, onQueryDefinitionSelected, onSearch } = props;
+  const { requiredFields, optionalFields,
+    dataSources, dataSource, onDataSourceChange,
+    query, defaultQueryArg, onQueryInputValueChange,
+    onSubmit, submitDisabled, lastSearchQuery, onReset, resetDisabled
+  } = props;
 
-  const [ defaultQueryFields, setDefaultQueryFields ] = useState();
-  const [ queryDefinition, setQueryDefinition ] = useState(null);
-  const [ query, setQuery ] = useState({});
-  const [ searchLaunched, setSearchLaunched ] = useState(false);
-
-  // First, load the default query fields from the config and their values (if any) from the URL
-  // Also find which of the default query fields has the autofocus - it should be the first required field without a URL value, if any matches these criteria
-  useEffect(() => {
-    let urlSearchParams = new URLSearchParams(window.location.search);
-    setDefaultQueryFields(() => {
-      let fields = QueryConfig.defaultQueryFields.slice() || [];
-      let autoFocusedField;
-      fields.forEach(f => {
-        f.value = urlSearchParams.get(f?.name) || null;
-        if (f.value) {
-          onQueryInputValueChange(f.value, f);
-        } else if (f.required && !autoFocusedField) {
-          f.autoFocus = true;
-          autoFocusedField = f.name;
-        }
-      });
-      return fields;
-    });
-  }, []);
-
-  // When the data source changes, reset searchLaunched to mark that the displayed (if any) data no longer matches the query
-  useEffect(() => {
-    setSearchLaunched(false);
-    onQueryDefinitionSelected(queryDefinition);
-  }, [queryDefinition?.name]);
-
-  // When an input value changes, update the query object
-  // Also reset searchLaunched to mark that the displayed (if any) data no longer matches the query
-  const onQueryInputValueChange = (newValue, field, arg={name: "query"}) => {
-    // Update the query object
-    setQuery(q => ({
-      ...q,
-      [arg.name] : {
-        ...q[arg.name],
-        [field.name]: newValue
-      }
-    }));
-    // The results no longer reflect the query
-    setSearchLaunched(false);
-  }
-
-  // When the search form is submitted, launch the search
-  const handleSearch = (event) => {
-    event?.preventDefault();
-    setSearchLaunched(true);
-    onSearch(query);
-  };
-
-  // ---------------------------------------------------------------
-  // Rendering
-
-  const displayDefaultQueryField = (field) => displayQueryField(field, {name: "query"}, true);
+  const displayDefaultQueryField = (field) => displayQueryField(field, defaultQueryArg, true);
 
   const displayQueryField = (f, arg, includeDefaultFields) => {
-    const matchingDefaultField = defaultQueryFields.find(df => df.name === f.name);
+    const matchingDefaultField = [
+      ...requiredFields.map(r => r.fields).flat(),
+      ...optionalFields
+    ].find(df => df.name === f.name);
 
     // if we've displayed this field elsewhere in the default fields group, skip
     if (!includeDefaultFields && matchingDefaultField) {
@@ -116,104 +65,106 @@ export default function QueryForm (props) {
     // Obtain the right input type, based on the field type
     const InputDisplay = QueryComponentManager.getComponent(f);
 
-    const disabled = !!matchingDefaultField.value;
+    const disabled = !!matchingDefaultField?.value;
 
     return (
-      <Grid item key={`${arg.name}-${f.name}`} xs="auto" sx={{maxWidth: "100%"}}>
-        <InputDisplay
-          autoFocus={f.autoFocus}
-          label={f.label || camelCaseToWords(f.name)}
-          value={matchingDefaultField?.value || query?.[arg.name]?.[f?.name] || ''}
-          disabled={disabled}
-          color={disabled ? "info" : undefined}
-          onChange={value => onQueryInputValueChange(value, f, arg)}
-          {...f?.type}
-        />
-      </Grid>
+      <InputDisplay
+        key={f?.name}
+        autoFocus={f.autoFocus}
+        label={f.label || camelCaseToWords(f?.name)}
+        value={matchingDefaultField?.value || query?.[arg.name]?.[f?.name] || ''}
+        disabled={disabled}
+        color={disabled ? "info" : undefined}
+        onChange={value => onQueryInputValueChange(value, f, arg)}
+        {...f?.type}
+      />
     );
   }
 
-  // Don't render the form until we know which input has the autofocus
-  if (!defaultQueryFields) {
-    return (
-      <Grid container justifyContent="center">
-        <Grid item>
-          <CircularProgress />
-        </Grid>
-      </Grid>
-    );
-  }
+  const dataSourceHasAutoFocus = () => {
+    !requiredFields.map(r => r.fields).flat().some(f => f.autoFocus)
+  };
 
   // Render fields in this order:
   // 1. required default query fields as specified by queryConfig
-  // 2. the datasource dropdown
-  // 3. optional default query fields as specified by queryConfig
-  // 4. all other fields supported by the data source
+  // 2. optional default query fields as specified by queryConfig
+  // 3. the data source dropdown
+  // 4. all other fields supported by the selected data source
   // 5. search button, which is disabled if either:
   //    * none of the required query fields have a value specified
-  //    * the data source, which is also required, hasn't been selected yet
-  //    * the search has been just launched, and the results reflect the query
+  //    * the data source, which is also required for now, hasn't been selected yet
+  //    * the search has been just launched, and the results currently reflect the query
   return (
-    <form onSubmit={handleSearch}>
-      <Grid container spacing={2} direction="row" alignItems="center" justifyContent="center">
-        <Grid item xs={12}>
-          { queryIntro && <FormattedText>{ queryIntro }</FormattedText> }
-        </Grid>
-        { defaultQueryFields.filter(f => f.required).map(displayDefaultQueryField) }
-        <Grid item xs={true}>
-          <Autocomplete
-            sx={{minWidth: "240px"}}
-            autoComplete
-            autoHighlight
-            autoSelect
-            disableClearable
-            loading={!queryDefinitions?.length}
-            options={queryDefinitions || []}
-            value={queryDefinition}
-            onChange={(event, value) => setQueryDefinition(value)}
-            renderInput={(params) =>
-              <TextField
+    <QueryFormContainer
+      intro={queryIntro}
+      onSubmit={onSubmit}
+      submitDisabled={submitDisabled}
+      onReset={onReset}
+      resetDisabled={resetDisabled}
+      query={lastSearchQuery}
+      requiredFields={requiredFields?.map(group => group.fields).flat()}
+    >
+      <QuerySection maxWidth="sm" divider="or" title="Required" color="primary">
+        { requiredFields.map((subset, index) =>
+          <QueryFieldset
+            key={index}
+            fieldset={subset}
+            displayField={displayDefaultQueryField}
+          />
+        ) }
+      </QuerySection>
+      <QuerySection title="Optional" direction="column">
+        <QueryFieldset
+          fieldset={{label: "Refine your search", fields: optionalFields}}
+          displayField={displayDefaultQueryField}
+        />
+        <Autocomplete
+          sx={{
+            minWidth: "240px",
+            "&:hover .MuiInputAdornment-root": {
+              visibility: "visible"
+            },
+            "&.Mui-focused .MuiInputAdornment-root": {
+              visibility: "visible"
+            }
+          }}
+          autoComplete
+          autoHighlight
+          autoSelect
+          openOnFocus={!dataSourceHasAutoFocus()}
+          loading={!dataSources?.length}
+          options={dataSources || []}
+          value={dataSource}
+          onChange={(event, value) => onDataSourceChange(value)}
+          renderInput={(params) =>
+             <TextField
                 {...params}
-                autoFocus={!defaultQueryFields.some(f => f.autoFocus)}
-                label="Data to query"
-                placeholder="Select the data to query"
+                autoFocus={dataSourceHasAutoFocus()}
+                label="Data source"
+                placeholder="Select the data source to query"
                 InputProps = {{
                   ...params.InputProps,
                   endAdornment: <>
                     {params.InputProps.endAdornment}
-                    {queryDefinition &&
-                      <InputAdornment position="end">
-                        <InfoDisplay color="primary" title={`About ${queryDefinition.label}`} size="small">
-                          { dbDescriptions[queryDefinition.name] }
+                    {dataSource &&
+                      <InputAdornment position="end" sx={{visibility: "hidden"}}>
+                        <InfoDisplay color="primary" title={`About ${dataSource.label}`} size="small">
+                          { `TO DO ${dataSource?.type?.description}` }
                         </InfoDisplay>
-                       </InputAdornment>
-                     }
+                      </InputAdornment>
+                    }
                   </>
                 }}
               />
-            }
+          }
+        />
+        { dataSource?.args?.filter(arg => arg?.inputFields).map(arg => arg.inputFields.map(f =>
+          <QueryFieldset key={`${arg.name}-${f.name}`}
+            fieldset={{fields: arg.inputFields}}
+            displayField={f => displayQueryField(f, arg)}
           />
-        </Grid>
-        { defaultQueryFields.filter(f => !f.required).map(displayDefaultQueryField) }
-        { queryDefinition?.args?.map(arg => arg?.inputFields.map(f => displayQueryField(f, arg))) }
-        <Grid item xs="auto">
-          <Button
-            type="submit"
-            variant="contained"
-            startIcon={<SearchIcon/>}
-            disabled={
-              !!(Object.values(query)
-                  .map(a => Object.entries(a)).flat()
-                  .filter(([k,v]) => v && defaultQueryFields.some(f => f.name === k && f.required))
-                  .length === 0)
-              || !queryDefinition
-              || searchLaunched
-            }
-          >
-            Search
-          </Button>
-        </Grid>
-      </Grid>
-    </form>
+        )) }
+      </QuerySection>
+    </QueryFormContainer>
   );
 };

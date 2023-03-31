@@ -35,13 +35,15 @@ import QueryConfig from "../../config/queryConfig.json";
 function RecordViewer(props) {
   const { dataSource, id, data, fieldsDefinition, query, open, onClose } = props;
 
-  const requiredFields = QueryConfig.defaultQueryFields.filter(f => f.required);
+  const requiredFields = QueryConfig.requiredFields.map(group => group.fields).flat();
 
   const title = <>
    { dataSource } { id }
    { requiredFields?.length && 
      <Typography color="textSecondary" variant="body2">
-       { requiredFields.map(f => `${f.label || f.name} : ${query[f.name]}`).join(", ") }
+       { requiredFields.filter(f => query[f.name])
+           .map(f => `${f.label || f.name} : ${query[f.name]}`).join(", ")
+       }
      </Typography>
    }
   </>;

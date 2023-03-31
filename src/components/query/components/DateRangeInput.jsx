@@ -30,7 +30,6 @@ let DateRangeInput = (props) => (
   <DateTimeRangeInput
      pickerComponent={DatePicker}
      dateFormat="YYYY-MM-DD"
-     sx={{maxWidth: "170px"}}
      toString={date => (date ? date.format().substring(0,10) : '')}
      {...props}
   />
