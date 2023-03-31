@@ -35,6 +35,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import FormattedText from "../utils/FormattedText";
 import InfoDisplay from "../utils/InfoDisplay";
 import SectionDivider from "../utils/SectionDivider";
+import { camelCaseToWords } from "../utils/utils";
 
 // Import the QueryComponentManager and the supported input components
 import QueryComponentManager from "./QueryComponentManager";
@@ -124,11 +125,12 @@ export default function QueryForm (props) {
       <Grid item key={`${arg.name}-${f.name}`} xs="auto" sx={{maxWidth: "100%"}}>
         <InputDisplay
           autoFocus={f.autoFocus}
-          label={f.label || f.name}
+          label={f.label || camelCaseToWords(f.name)}
           value={matchingDefaultField?.value || query?.[arg.name]?.[f?.name] || ''}
           disabled={disabled}
           color={disabled ? "info" : undefined}
           onChange={value => onQueryInputValueChange(value, f, arg)}
+          {...f?.type}
         />
       </Grid>
     );

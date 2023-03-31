@@ -20,31 +20,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { TextField } from "@mui/material";
 
-import DateTimeRangeInput from "./DateTimeRangeInput";
-import QueryComponentManager from "./QueryComponentManager";
+import QueryComponentManager from "../QueryComponentManager";
 
-// Date range input field used via the QueryComponentManager in QueryForm
-let DateRangeInput = (props) => (
-  <DateTimeRangeInput
-     pickerComponent={DatePicker}
-     dateFormat="YYYY-MM-DD"
-     sx={{maxWidth: "170px"}}
-     toString={date => (date ? date.format().substring(0,10) : '')}
-     {...props}
-  />
-);
+// Text Input field used by the QuerySetup component
+let TextInput = (props) => {
+  let { label, onChange, ...textFieldProps } = props;
 
-DateRangeInput.propTypes = {
+  return (
+    <TextField
+      {...textFieldProps}
+      label={label}
+      onChange={event => onChange(event.target.value)}
+    />
+  )
+}
+
+TextInput.propTypes = {
   label: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
 };
 
-export default DateRangeInput;
+export default TextInput;
 
 QueryComponentManager.registerComponent((definition) => {
-  if (["DateRange"].includes(definition?.type?.name)) {
-    return [DateRangeInput, 50];
-  }
+  return [TextInput, 0];
 });

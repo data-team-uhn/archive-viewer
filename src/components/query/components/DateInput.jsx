@@ -20,30 +20,39 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
 
-import DateTimeRangeInput from "./DateTimeRangeInput";
-import QueryComponentManager from "./QueryComponentManager";
+import DateTimeInput from "./DateTimeInput";
+import QueryComponentManager from "../QueryComponentManager";
 
-// Time range input field used via the QueryComponentManager in QueryForm
-let TimeRangeInput = (props) => (
-  <DateTimeRangeInput
-     pickerComponent={DateTimePicker}
-     dateFormat="YYYY-MM-DD hh:mm a"
-     toString={date => (date ? date.format().substring(0,16) : '')}
-     {...props}
-  />
-);
+// Date input field used via the QueryComponentManager in QueryForm
+let DateInput = (props) => {
 
-TimeRangeInput.propTypes = {
+  const dateFormat = "YYYY-MM-DD";
+
+  const toString = (date) => date ? dayjs(date).format().substring(0, 10) : "";
+
+  return (
+    <DateTimeInput
+      {...props}
+      pickerComponent={DatePicker}
+      format={dateFormat}
+      sx={{maxWidth: "170px"}}
+      toString={toString}
+    />
+  );
+}
+
+DateInput.propTypes = {
   label: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
 };
 
-export default TimeRangeInput;
+export default DateInput;
 
 QueryComponentManager.registerComponent((definition) => {
-  if (["TimeRange"].includes(definition?.type?.name)) {
-    return [TimeRangeInput, 50];
+  if (["Date"].includes(definition?.type?.name)) {
+    return [DateInput, 50];
   }
 });

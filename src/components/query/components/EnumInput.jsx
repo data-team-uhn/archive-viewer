@@ -20,30 +20,43 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { TextField } from "@mui/material";
+import { Autocomplete, TextField } from '@mui/material';
 
-import QueryComponentManager from "./QueryComponentManager";
+import QueryComponentManager from "../QueryComponentManager";
 
-// Text Input field used by the QuerySetup component
-let TextInput = (props) => {
-  let { label, onChange, ...textFieldProps } = props;
+// Enum input field used via the QueryComponentManager in QueryForm
+let EnumInput = (props) => {
+  const { value, options, onChange, ...rest } = props;
 
   return (
-    <TextField
-      {...textFieldProps}
-      label={label}
-      onChange={event => onChange(event.target.value)}
+    <Autocomplete
+      autoComplete
+      autoHighlight
+      autoSelect
+      openOnFocus
+      value={value || null}
+      options={options ?? []}
+      onChange={(evt, val) => onChange(val)}
+      renderInput={(params) =>
+        <TextField
+          {...params}
+          {...rest}
+        />
+      }
     />
-  )
+  );
 }
 
-TextInput.propTypes = {
+EnumInput.propTypes = {
   label: PropTypes.string.isRequired,
+  options: PropTypes.arrayOf(PropTypes.string),
   onChange: PropTypes.func.isRequired,
 };
 
-export default TextInput;
+export default EnumInput;
 
 QueryComponentManager.registerComponent((definition) => {
-  return [TextInput, 0];
+  if (["Enum"].includes(definition?.type?.name)) {
+    return [EnumInput, 50];
+  }
 });

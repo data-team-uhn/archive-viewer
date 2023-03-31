@@ -19,12 +19,18 @@
 
 // Exposes the query field input components that should be available via the QueryComponentManager.
 // importing * from this module will register the components in the component manager.
-const TextInput = require("./TextInput");
-const DateRangeInput = require("./DateRangeInput")
-const TimeRangeInput = require("./TimeRangeInput")
+const TextInput = require("./components/TextInput");
+const DateInput = require("./components/DateInput");
+const TimeInput = require("./components/TimeInput");
+const DateRangeInput = require("./components/DateRangeInput");
+const TimeRangeInput = require("./components/TimeRangeInput");
+const EnumInput = require("./components/EnumInput");
 
 module.exports = [
   TextInput,
+  DateInput,
+  TimeInput,
   DateRangeInput,
-  TimeRangeInput
+  TimeRangeInput,
+  EnumInput
 ];

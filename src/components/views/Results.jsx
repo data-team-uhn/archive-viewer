@@ -110,7 +110,7 @@ export default function Results (props) {
       <SectionDivider
         color={rows ? rows.length ? undefined : "error" : "secondary"}
         title={`${rows ? rows.length || "No" : "Fetching"} results for `}
-        tags={Object.entries(query?.[QUERY_FIELD] || {}).map(([k, v]) => (k + ": " + v))}
+        tags={Object.entries(query?.[QUERY_FIELD] || {}).map(([k, v]) => (camelCaseToWords(k) + ": " + v))}
       />
       { rows?.length ?
         <>
