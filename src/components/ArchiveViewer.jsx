@@ -1,0 +1,122 @@
+//
+//  Licensed to the Apache Software Foundation (ASF) under one
+//  or more contributor license agreements.  See the NOTICE file
+//  distributed with this work for additional information
+//  regarding copyright ownership.  The ASF licenses this file
+//  to you under the Apache License, Version 2.0 (the
+//  "License"); you may not use this file except in compliance
+//  with the License.  You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing,
+//  software distributed under the License is distributed on an
+//  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+//  KIND, either express or implied.  See the License for the
+//  specific language governing permissions and limitations
+//  under the License.
+//
+
+import React, { useEffect, useState } from "react";
+
+import {
+  Stack,
+} from "@mui/material";
+
+import { camelCaseToWords } from "./utils/utils";
+import QueryForm from "./query/QueryForm";
+import Results from "./views/Results";
+
+import QueryConfig from "../config/queryConfig.json";
+
+const INTROSPECTION_QUERY = `
+{
+  __schema {
+    queryType {
+      name
+      fields {
+        name
+        args { name type { name } }
+        type { name description }
+      }
+    }
+    types {
+      name
+      inputFields { name type { name } }
+      fields { name type { name } }
+    }
+  }
+}
+`;
+
+export default function ArchiveViewer (props) {
+  const [ queryDefinitions, setQueryDefinitions ] = useState([]);
+  const [ crtQueryDefinition, setCrtQueryDefinition ] = useState();
+  const [ crtQuery, setCrtQuery ] = useState();
+
+  useEffect(() => {
+    fetch(QueryConfig.url + INTROSPECTION_QUERY)
+      .then(response => response.json())
+      .then(json => processSchema(json?.data?.__schema));
+  }, []);
+
+  const processSchema = (schemaJson) => {
+    if (!schemaJson) return;
+    // All the defined types:
+    let allTypes = schemaJson.types;
+
+    // Get the query type:
+    let queryType = schemaJson.queryType;
+
+    // Retain only certain fields:
+    let qDefs = (queryType.fields || [])
+      // that support a user query
+      .filter(f => !!(f?.args?.length))
+      // that return the full list of results
+      .filter(f => f.type.name.match(/^\[.+\]$/));
+      // // that return a cursor (not a list with all results)
+      // .filter(f => !f.type.name.match(/^\[.+\]$/));
+
+    // Reformat for easier processing downstream:
+    qDefs.forEach(q => {
+      // Add a human-readable label
+      q.label = camelCaseToWords(q.name);
+      // For each argument, swap the 'type' reference for the inputFields specified by that type
+      q.args.forEach(arg => {
+        arg.inputFields = allTypes.find(type => type.name == arg.type.name).inputFields;
+      });
+      // Expand the return type definitions
+      expandType(q.type, allTypes);
+    });
+
+    setQueryDefinitions(qDefs);
+  }
+
+  const expandType = (typeDef, allTypes) => {
+    // Remove list markers "[" and "]", non-null marker "!" to obtain the type name, e.g. "[MyType!]" -> "MyType"
+    let typeName = typeDef.name.replaceAll(/[\[\]\!]/g, '');
+    // Check the list of all types if that type has any fields
+    let fields = allTypes.find(t => t.name == typeName)?.fields;
+    // If fields exist, expand their types as well, then add them to the type's definition
+    if (fields) {
+      fields.forEach(f => expandType(f.type, allTypes));
+      typeDef.fields = fields;
+    }
+  }
+
+  return (
+    <Stack spacing={6} direction="column">
+      <QueryForm
+        queryDefinitions={queryDefinitions}
+        onQueryDefinitionSelected={(newValue) => {
+          setCrtQueryDefinition(newValue);
+          setCrtQuery();
+        }}
+        onSearch={setCrtQuery}
+      />
+      { crtQuery &&
+        <Results queryDefinition={crtQueryDefinition} query={crtQuery} />
+      }
+    </Stack>
+  );
+};

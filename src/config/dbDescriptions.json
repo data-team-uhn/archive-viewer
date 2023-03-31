@@ -1,0 +1,4 @@
+{
+  "bdmAllergy": "Provides access to historical data regarding patients' medication prescriptions.",
+  "bdmOrder": "Provides access to historical data regarding patients' known allergies."
+}

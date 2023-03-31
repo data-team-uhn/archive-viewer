@@ -1,0 +1,13 @@
+{
+  "appName" : "Archive Viewer",
+  "logoColor" : "#106DB5",
+  "footerLinks" : [{
+    "label": "About",
+    "title" : "About the Archive Viewer",
+    "source": "about.md"
+  }, {
+    "label": "FAQ",
+    "title" : "Frequently Asked Questions",
+    "source": "faq.md"
+  }]
+}
