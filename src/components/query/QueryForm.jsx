@@ -19,27 +19,24 @@
 
 import React, { useEffect, useState } from "react";
 
-import { DataGrid } from '@mui/x-data-grid';
-
 import {
   Autocomplete,
   Button,
   CircularProgress,
   Grid,
   InputAdornment,
-  Stack,
   TextField,
 } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 
 import FormattedText from "../utils/FormattedText";
 import InfoDisplay from "../utils/InfoDisplay";
-import SectionDivider from "../utils/SectionDivider";
 import { camelCaseToWords } from "../utils/utils";
 
-// Import the QueryComponentManager and the supported input components
+// Import the QueryComponentManager
 import QueryComponentManager from "./QueryComponentManager";
-import * as QueryComponents from "./QueryComponents";
+// Register all the available query field components to the manager
+import "./QueryComponents";
 
 import QueryConfig from "../../config/queryConfig.json";
 import dbDescriptions from "../../config/dbDescriptions.json";
@@ -109,7 +106,7 @@ export default function QueryForm (props) {
   const displayDefaultQueryField = (field) => displayQueryField(field, {name: "query"}, true);
 
   const displayQueryField = (f, arg, includeDefaultFields) => {
-    const matchingDefaultField = defaultQueryFields.find(df => df.name == f.name);
+    const matchingDefaultField = defaultQueryFields.find(df => df.name === f.name);
 
     // if we've displayed this field elsewhere in the default fields group, skip
     if (!includeDefaultFields && matchingDefaultField) {
@@ -207,8 +204,8 @@ export default function QueryForm (props) {
             disabled={
               !!(Object.values(query)
                   .map(a => Object.entries(a)).flat()
-                  .filter(([k,v]) => v && defaultQueryFields.some(f => f.name == k && f.required))
-                  .length == 0)
+                  .filter(([k,v]) => v && defaultQueryFields.some(f => f.name === k && f.required))
+                  .length === 0)
               || !queryDefinition
               || searchLaunched
             }

@@ -16,20 +16,18 @@
 //  specific language governing permissions and limitations
 //  under the License.
 //
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from "prop-types";
 
 import {
   Button,
   CircularProgress,
   DialogContent,
-  Icon,
   IconButton,
   Tooltip,
 } from "@mui/material";
 
 import HelpIcon from '@mui/icons-material/Help';
-import CloseIcon from '@mui/icons-material/Close';
 
 import ResponsiveDialog from "./ResponsiveDialog";
 import FormattedText from "./FormattedText";
@@ -62,7 +60,7 @@ function InfoDisplay(props) {
         </DialogContent>
       </ResponsiveDialog>
       <Tooltip title={title}>
-        { variant == "icon" ?
+        { variant === "icon" ?
           <IconButton
             {...buttonProps}
             component="span"
@@ -74,7 +72,7 @@ function InfoDisplay(props) {
           <Button
             {...buttonProps}
             onClick={event => { onClick?.(); setOpen(true) }}
-            startIcon={variant == "extended" ? { icon } : undefined}
+            startIcon={variant === "extended" ? { icon } : undefined}
             sx={{textTransform: "none"}}
           >
             {label}

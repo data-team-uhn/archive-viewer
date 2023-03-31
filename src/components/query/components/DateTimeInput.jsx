@@ -34,7 +34,7 @@ let DateTimeInput = (props) => {
     if (value && dayjs(value).isValid()) {
       setDate(dayjs(value));
     }
-  }, []);
+  }, [value]);
 
   const handleChange = (val) => {
     if (val.isValid()) {

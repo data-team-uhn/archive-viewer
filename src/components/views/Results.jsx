@@ -19,7 +19,7 @@
 
 import React, { useEffect, useState } from "react";
 
-import { DataGrid, useGridApiRef } from '@mui/x-data-grid';
+import { DataGrid } from '@mui/x-data-grid';
 
 import {
   LinearProgress,
@@ -55,9 +55,9 @@ export default function Results (props) {
     setColumns(fieldDefs?.map(f => ({
       field: f.name,
       headerName: camelCaseToWords(f.name),
-      ...(f.type.name == 'Int' ? {type: "number", width: 100} : {width: 150})
+      ...(f.type.name === 'Int' ? {type: "number", width: 100} : {width: 150})
     })));
-  }, [queryDefinition?.name]);
+  }, [queryDefinition?.type]);
 
   // When the query is built, serialize it and launch the search
   useEffect(() => {

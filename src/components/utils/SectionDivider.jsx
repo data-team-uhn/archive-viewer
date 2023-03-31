@@ -37,6 +37,12 @@ let SectionDivider = (props) => {
   );
 }
 
+SectionDivider.propTypes = {
+  title: PropTypes.string.isRequired,
+  tags: PropTypes.arrayOf(PropTypes.string),
+  color: PropTypes.string,
+}
+
 SectionDivider.defaultProps = {
   color: "primary",
 };

@@ -23,7 +23,6 @@ import {
   AppBar,
   Stack,
   Toolbar,
-  Typography,
 } from "@mui/material";
 
 import Logo from "./media/Logo";

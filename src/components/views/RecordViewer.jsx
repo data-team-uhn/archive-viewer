@@ -16,21 +16,16 @@
 //  specific language governing permissions and limitations
 //  under the License.
 //
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from "prop-types";
 
 import {
-  Chip,
   DialogContent,
   Grid,
   Typography,
 } from "@mui/material";
 
-import HelpIcon from '@mui/icons-material/Help';
-import CloseIcon from '@mui/icons-material/Close';
-
 import ResponsiveDialog from "../utils/ResponsiveDialog";
-import FormattedText from "../utils/FormattedText";
 
 import QueryConfig from "../../config/queryConfig.json";
 
@@ -69,6 +64,18 @@ function RecordViewer(props) {
       </DialogContent>
     </ResponsiveDialog>
   )
+}
+
+// dataSource, id, data, fieldsDefinition, query, open, onClose
+
+RecordViewer.propTypes = {
+  dataSource: PropTypes.string,
+  id: PropTypes.string,
+  data: PropTypes.object,
+  fieldsDefinition: PropTypes.arrayOf(PropTypes.object),
+  query: PropTypes.object,
+  open: PropTypes.bool,
+  onClose: PropTypes.func,
 }
 
 export default RecordViewer;

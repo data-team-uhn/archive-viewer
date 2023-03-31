@@ -22,7 +22,6 @@ import PropTypes from 'prop-types';
 
 import {
   Grid,
-  TextField,
 } from "@mui/material";
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -50,7 +49,7 @@ let DateTimeRangeInput = (props) => {
   // Propagate the date change to the parent component
   useEffect(() => {
     (start || end) && onChange(`${toString(start)}${RANGE_SEPARATOR}${toString(end)}`);
-  }, [start, end]);
+  }, [start, end, onChange]);
 
   const handleChange = (value, setter) => {
     if (dayjs(value, dateFormat, true).isValid()) {
@@ -68,6 +67,7 @@ let DateTimeRangeInput = (props) => {
             value={start}
             onChange={value => handleChange(value, setStart)}
             maxDate={end}
+            {...rest}
           />
         </Grid>
         <Grid item>—</Grid>
@@ -78,6 +78,7 @@ let DateTimeRangeInput = (props) => {
             value={end}
             onChange={value => handleChange(value, setEnd)}
             minDate={start}
+            {...rest}
           />
         </Grid>
       </Grid>

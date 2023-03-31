@@ -83,7 +83,7 @@ export default function ArchiveViewer (props) {
       q.label = camelCaseToWords(q.name);
       // For each argument, swap the 'type' reference for the inputFields specified by that type
       q.args.forEach(arg => {
-        arg.inputFields = allTypes.find(type => type.name == arg.type.name).inputFields;
+        arg.inputFields = allTypes.find(type => type.name === arg.type.name).inputFields;
       });
       // Expand the return type definitions
       expandType(q.type, allTypes);
@@ -94,9 +94,9 @@ export default function ArchiveViewer (props) {
 
   const expandType = (typeDef, allTypes) => {
     // Remove list markers "[" and "]", non-null marker "!" to obtain the type name, e.g. "[MyType!]" -> "MyType"
-    let typeName = typeDef.name.replaceAll(/[\[\]\!]/g, '');
+    let typeName = typeDef.name.replaceAll(/[[\]!]/g, '');
     // Check the list of all types if that type has any fields
-    let fields = allTypes.find(t => t.name == typeName)?.fields;
+    let fields = allTypes.find(t => t.name === typeName)?.fields;
     // If fields exist, expand their types as well, then add them to the type's definition
     if (fields) {
       fields.forEach(f => expandType(f.type, allTypes));
