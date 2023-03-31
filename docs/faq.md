@@ -1,0 +1,7 @@
+#### Who can access the Archive Viewer?
+
+The proof of concept app, displaying only sample data, provides unrestricted acces. The production archive viewer will require authentication with UHN credentials.
+
+#### How many data sources are available?
+
+There are currently 2 data sources implemented: **Bdm Orders** and **Bdm Allergies**.
