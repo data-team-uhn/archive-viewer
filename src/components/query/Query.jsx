@@ -26,6 +26,7 @@ import {
 import deepEqual from 'deep-equal';
 
 import QueryForm from "./QueryForm";
+import { GRAPHQL_QUERY_ARGUMENT } from "../utils/utils";
 import QueryConfig from "../../config/queryConfig.json";
 
 export default function Query (props) {
@@ -39,7 +40,7 @@ export default function Query (props) {
   const [ searchLaunched, setSearchLaunched ] = useState(false);
   const [ lastSearchQuery, setLastSearchQuery ] = useState();
 
-  const defaultQueryArg = {name: "query"};
+  const defaultQueryArg = GRAPHQL_QUERY_ARGUMENT;
 
   // First, load the default query fields from the config and their values (if any) from the URL
   // Also find which of the default query fields has the autofocus - it should be the first required field without a URL value, if any matches these criteria

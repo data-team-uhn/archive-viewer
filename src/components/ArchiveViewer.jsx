@@ -23,31 +23,11 @@ import {
   Stack,
 } from "@mui/material";
 
-import { camelCaseToWords } from "./utils/utils";
+import { GRAPHQL_INTROSPECTION_QUERY, camelCaseToWords } from "./utils/utils";
 import Query from "./query/Query";
 import Results from "./views/Results";
 
 import QueryConfig from "../config/queryConfig.json";
-
-const INTROSPECTION_QUERY = `
-{
-  __schema {
-    queryType {
-      name
-      fields {
-        name
-        args { name type { name } }
-        type { name description }
-      }
-    }
-    types {
-      name
-      inputFields { name type { name } }
-      fields { name type { name } }
-    }
-  }
-}
-`;
 
 export default function ArchiveViewer (props) {
   const [ queryDefinitions, setQueryDefinitions ] = useState([]);
@@ -55,7 +35,7 @@ export default function ArchiveViewer (props) {
   const [ crtQuery, setCrtQuery ] = useState();
 
   useEffect(() => {
-    fetch(QueryConfig.url + INTROSPECTION_QUERY)
+    fetch(QueryConfig.url + GRAPHQL_INTROSPECTION_QUERY)
       .then(response => response.json())
       .then(json => processSchema(json?.data?.__schema));
   }, []);

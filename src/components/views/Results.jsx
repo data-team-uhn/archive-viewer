@@ -32,7 +32,7 @@ import {
 import FormattedText from "../utils/FormattedText";
 import RecordViewer from "./RecordViewer";
 import SectionDivider from "../utils/SectionDivider";
-import { camelCaseToWords } from "../utils/utils";
+import { serializeGraphQLQuery, GRAPHQL_QUERY_ARGUMENT, camelCaseToWords } from "../utils/utils";
 
 import QueryConfig from "../../config/queryConfig.json";
 
@@ -47,7 +47,7 @@ export default function Results (props) {
 
   // CURSOR: const PAGE_SIZE = 5;
   // CURSOR: const BASE_QUERY = { pageSize: PAGE_SIZE };
-  const QUERY_FIELD = "query";
+  const QUERY_FIELD = GRAPHQL_QUERY_ARGUMENT.name;
 
   // CURSOR: const PAGE_DATA_FIELD = 'page';
   // CURSOR: const CURSOR_INFO_FIELD = 'cursor';
@@ -65,37 +65,13 @@ export default function Results (props) {
   // When the query is built, serialize it and launch the search
   useEffect(() => {
     setRows();
-    query && fetch(QueryConfig.url + serializeGraphQLQuery())
+    query && fetch(QueryConfig.url + serializeGraphQLQuery(query, queryDefinition))
       .then(response => response.json())
       .then(json => {
         processResults(json);
       });
   }, [query]);
 
-  // -------------------------------------------------------------------------
-  // Serialize the query object as a graphql query
-  const serializeGraphQLQuery = () => (
-    "{ " +
-       queryDefinition.name +
-       getQueryAsString(query) + // CURSOR: getQueryAsString({...BASE_QUERY, ...query}) +
-       getFieldsAsString(queryDefinition.type) +
-    " }"
-  );
-
-  // Format the query object as a string of this shape:
-  // (field_1: {subfield_1_1: "value_1_1", subfield_1_2: "value_1_2", ...}, field_2: {...}, ...)
-  const getQueryAsString = (q) => (
-    "(" + Object.entries(q).map(([k,v]) => (k + ":" + JSON.stringify(v))).join(", ") + ") "
-  );
-
-  // Format the fields as a string of this shape:
-  // { field_1 { subfield_1_1 { ... } subfield_1_2 ... } field_2 { ... } ... }
-  // If there are no fields, return an empty string
-  const getFieldsAsString = (typeDef) => (
-    typeDef.fields ?
-      "{ " + typeDef.fields.map(f => f.name + ' ' + getFieldsAsString(f.type)).join(' ') + " }"
-    : ""
-  );
   // -------------------------------------------------------------------------
   // Process the results of a query - record the rows and cursor
   const processResults = (resultsJson) => {

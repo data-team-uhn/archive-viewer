@@ -17,6 +17,69 @@
 //  under the License.
 //
 
-export function camelCaseToWords(str) {
+// -------------------------------------------------------------------------
+// Label formatting from field name
+const camelCaseToWords = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1).replace( /([A-Z])/g, " $1" ).toLowerCase();
+}
+
+// -------------------------------------------------------------------------
+// Serialize a query object as a GraphQL query
+
+// Format the query object as a string of this shape:
+// (field_1: {subfield_1_1: "value_1_1", subfield_1_2: "value_1_2", ...}, field_2: {...}, ...)
+const getQueryAsString = (q) => (
+  "(" + Object.entries(q).map(([k,v]) => (k + ":" + JSON.stringify(v))).join(", ") + ") "
+);
+
+// Format the fields as a string of this shape:
+// { field_1 { subfield_1_1 { ... } subfield_1_2 ... } field_2 { ... } ... }
+// If there are no fields, return an empty string
+const getFieldsAsString = (typeDef) => (
+  typeDef.fields ?
+    "{ " + typeDef.fields.map(f => f.name + ' ' + getFieldsAsString(f.type)).join(' ') + " }"
+  : ""
+);
+
+// Build the query string
+const serializeGraphQLQuery = (query, queryDefinition) => (
+  "{ " +
+     queryDefinition.name +
+     getQueryAsString(query) +
+     getFieldsAsString(queryDefinition.type) +
+  " }"
+);
+
+// ---------------------------------------------------------------------------
+// GraphQL introspection query
+const GRAPHQL_INTROSPECTION_QUERY = `
+{
+  __schema {
+    queryType {
+      name
+      fields {
+        name
+        args { name type { name } }
+        type { name description }
+      }
+    }
+    types {
+      name
+      inputFields { name type { name } }
+      fields { name type { name } }
+    }
+  }
+}
+`;
+// ---------------------------------------------------------------------------
+// The parameter pa
+const GRAPHQL_QUERY_ARGUMENT = {name: 'query'};
+
+// ---------------------------------------------------------------------------
+// All exports:
+export {
+  camelCaseToWords,
+  serializeGraphQLQuery,
+  GRAPHQL_INTROSPECTION_QUERY,
+  GRAPHQL_QUERY_ARGUMENT,
 }
