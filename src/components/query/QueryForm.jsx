@@ -81,9 +81,9 @@ export default function QueryForm (props) {
     );
   }
 
-  const dataSourceHasAutoFocus = () => {
+  const dataSourceHasAutoFocus = () => (
     !requiredFields.map(r => r.fields).flat().some(f => f.autoFocus)
-  };
+  );
 
   // Render fields in this order:
   // 1. required default query fields as specified by queryConfig
