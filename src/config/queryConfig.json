@@ -19,7 +19,7 @@
       "type": {"name": "Date"}
     }, {
       "name": "sex",
-      "type": {"name":"Enum", "options": ["M","F","O"]}
+      "type": {"enumValues": [{"name" : "M"},{"name": "F"},{"name" : "O"}]}
     }]
   }],
   "optionalFields" : [{

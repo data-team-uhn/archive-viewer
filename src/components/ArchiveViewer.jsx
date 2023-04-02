@@ -76,12 +76,15 @@ export default function ArchiveViewer (props) {
     // Remove list markers "[" and "]", non-null marker "!" to obtain the type name, e.g. "[MyType!]" -> "MyType"
     let typeName = typeDef.name.replaceAll(/[[\]!]/g, '');
     // Check the list of all types if that type has any fields
-    let fields = allTypes.find(t => t.name === typeName)?.fields;
+    let type = allTypes.find(t => t.name === typeName);
+    let fields = type?.fields;
     // If fields exist, expand their types as well, then add them to the type's definition
     if (fields) {
       fields.forEach(f => expandType(f.type, allTypes));
       typeDef.fields = fields;
     }
+    // Add enumValues if any are defined for that type
+    typeDef.enumValues = type.enumValues;
   }
 
   return (

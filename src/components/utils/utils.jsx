@@ -67,6 +67,7 @@ const GRAPHQL_INTROSPECTION_QUERY = `
       name
       inputFields { name type { name } }
       fields { name type { name } }
+      enumValues {name}
     }
   }
 }

@@ -26,7 +26,7 @@ import QueryComponentManager from "../QueryComponentManager";
 
 // Enum input field used via the QueryComponentManager in QueryForm
 let EnumInput = (props) => {
-  const { value, options, onChange, ...rest } = props;
+  const { value, enumValues, onChange, ...rest } = props;
 
   return (
     <Autocomplete
@@ -35,7 +35,7 @@ let EnumInput = (props) => {
       autoSelect
       openOnFocus
       value={value || null}
-      options={options ?? []}
+      options={enumValues.map(v => v.name)}
       onChange={(evt, val) => onChange(val)}
       renderInput={(params) =>
         <TextField
@@ -49,14 +49,14 @@ let EnumInput = (props) => {
 
 EnumInput.propTypes = {
   label: PropTypes.string.isRequired,
-  options: PropTypes.arrayOf(PropTypes.string),
+  enumValues: PropTypes.arrayOf(PropTypes.shape({name: PropTypes.string})).isRequired,
   onChange: PropTypes.func.isRequired,
 };
 
 export default EnumInput;
 
 QueryComponentManager.registerComponent((definition) => {
-  if (["Enum"].includes(definition?.type?.name)) {
+  if (definition?.type?.enumValues?.length > 0) {
     return [EnumInput, 50];
   }
 });
