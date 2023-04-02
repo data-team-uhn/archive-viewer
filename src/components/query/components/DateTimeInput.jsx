@@ -33,6 +33,8 @@ let DateTimeInput = (props) => {
   useEffect(() => {
     if (value && dayjs(value).isValid()) {
       setDate(dayjs(value));
+    } else {
+      setDate(null);
     }
   }, [value]);
 

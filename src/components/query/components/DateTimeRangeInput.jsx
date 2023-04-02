@@ -46,14 +46,15 @@ let DateTimeRangeInput = (props) => {
     setEnd(range?.[1] ? dayjs(range[1]) : null);
   }, [value]);
 
-  // Propagate the date change to the parent component
-  useEffect(() => {
-    (start || end) && onChange(`${toString(start)}${RANGE_SEPARATOR}${toString(end)}`);
-  }, [start, end, onChange]);
-
-  const handleChange = (value, setter) => {
-    if (dayjs(value, dateFormat, true).isValid()) {
-      setter(value);
+  // Propagate any date change to the parent component
+  const handleChange = (value, setter, getRangeLimits) => {
+    let newValue = dayjs(value, dateFormat, true).isValid() ? value : null;
+    setter(newValue);
+    let range = getRangeLimits(newValue);
+    if (range.some(v => v)) {
+      onChange(`${toString(range[0])}${RANGE_SEPARATOR}${toString(range[1])}`)
+    } else {
+      onChange();
     }
   }
 
@@ -72,7 +73,7 @@ let DateTimeRangeInput = (props) => {
           <PickerComponent
             label={`${label} after`}
             value={start}
-            onChange={value => handleChange(value, setStart)}
+            onChange={(value) => handleChange(value, setStart, (v) => ([v, end]))}
             maxDate={end}
             {...commonProps}
             {...rest}
@@ -83,7 +84,7 @@ let DateTimeRangeInput = (props) => {
           <PickerComponent
             label={`${label} before`}
             value={end}
-            onChange={value => handleChange(value, setEnd)}
+            onChange={(value) => handleChange(value, setEnd, (v) => ([start, v]))}
             minDate={start}
             {...commonProps}
             {...rest}
