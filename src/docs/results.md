@@ -1,2 +1,5 @@
-You can **sort** and **filter** your results using the menu available next to each column title.
-You can view each result by clicking on the row.
+**Sort** and **filter** your results using the menu visible when hovering a column title
+or the `Filters` button.
+Click on a row to **view each result**. Select visible columns using the `Columns` button.
+Select rows by clicking on the checkboxes. **Download** a selection or the entire data as
+**CSV** using the `Export` button.

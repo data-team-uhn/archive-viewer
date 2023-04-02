@@ -19,7 +19,15 @@
 
 import React, { useEffect, useState } from "react";
 
-import { DataGrid } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridToolbarContainer,
+  GridToolbarColumnsButton,
+  GridToolbarFilterButton,
+  GridToolbarExportContainer,
+  GridCsvExportMenuItem,
+  GridToolbarQuickFilter,
+} from '@mui/x-data-grid';
 
 import {
   Card,
@@ -38,27 +46,63 @@ import QueryConfig from "../../config/queryConfig.json";
 
 import resultsIntro from "../../docs/results.md";
 
+const GridToolbarExport = ({ csvOptions, printOptions, ...other }) => (
+  <GridToolbarExportContainer {...other}>
+    <GridCsvExportMenuItem options={csvOptions} />
+  </GridToolbarExportContainer>
+);
+
+function DataGridToolbar() {
+  return (
+    <GridToolbarContainer sx={{p:2}}>
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
+      <GridToolbarExport
+        printOptions={{
+          hideFooter: true,
+          hideToolbar: true,
+        }}
+      />
+      <GridToolbarQuickFilter sx={{ml: 'auto'}}/>
+    </GridToolbarContainer>
+  );
+}
+
+// Type mapping between GraphQL and DataGrid
+const GRAPHQL_TO_DATAGRID_TYPE = {
+  'Int' : 'number',
+  'Int64': 'number',
+  'Float': 'number',
+  'Float64': 'number',
+  'String': 'string',
+  'Boolean': 'boolean',
+  'Date': 'date',
+  'Time': 'dateTime',
+};
+
 export default function Results (props) {
   const { queryDefinition, query } = props;
+
   const [ rows, setRows ] = useState();
   const [ columns, setColumns ] = useState();
   const [ crtRecordId, setCrtRecordId ] = useState();
-  // CURSOR: const [ cursor, setCursor ] = useState();
 
-  // CURSOR: const PAGE_SIZE = 5;
-  // CURSOR: const BASE_QUERY = { pageSize: PAGE_SIZE };
   const QUERY_FIELD = GRAPHQL_QUERY_ARGUMENT.name;
-
-  // CURSOR: const PAGE_DATA_FIELD = 'page';
-  // CURSOR: const CURSOR_INFO_FIELD = 'cursor';
 
   // When we know the query definition, build the column definitions
   useEffect(() => {
-    const fieldDefs = queryDefinition?.type?.fields; // CURSOR: .find(f => f.name == PAGE_DATA_FIELD)?.type.fields;
+    const fieldDefs = queryDefinition?.type?.fields;
     setColumns(fieldDefs?.map(f => ({
       field: f.name,
       headerName: camelCaseToWords(f.name),
-      ...(f.type.name === 'Int' ? {type: "number", width: 100} : {width: 150})
+      type: GRAPHQL_TO_DATAGRID_TYPE[f.type.name] || (f.type.enumValues && 'singleSelect'),
+      valueOptions: f.type.enumValues?.map(v => v.name),
+      width: ['String', 'Time'].includes(f.type.name) ? 180 : 100,
+      valueGetter: (
+        ['Date', 'Time'].includes(f.type.name) ?
+          ({ value }) => value && new Date(value)
+        : undefined
+      )
     })));
   }, [queryDefinition?.type]);
 
@@ -73,17 +117,16 @@ export default function Results (props) {
   }, [query]);
 
   // -------------------------------------------------------------------------
-  // Process the results of a query - record the rows and cursor
+  // Process the results of a query - record the rows
   const processResults = (resultsJson) => {
     const data = resultsJson?.data?.[queryDefinition?.name];
     setRows(data?.map((line, index) => ({id: index, ...line})) || []);
-    // CURSOR: setRows(data?.[PAGE_DATA_FIELD]?.map((line, index) => ({id: index, ...line})));
-    // CURSOR: setCursor(data?.[CURSOR_INFO_FIELD]);
   }
 
   // -------------------------------------------------------------------------
   // Rendering
   //
+
   return (columns && <>
     <Card>
       <CardHeader title={
@@ -96,15 +139,18 @@ export default function Results (props) {
       { rows?.length ?
         <Stack spacing={3}>
           { resultsIntro && <FormattedText variant="body2">{ resultsIntro }</FormattedText> }
-          <div style={{ height: 400, width: '100%'}}>
+          <div style={{ height: 600, width: '100%'}}>
             <DataGrid
               rows={rows}
               columns={columns}
-              autoHeight
-              hideFooter
+              checkboxSelection
+              disableRowSelectionOnClick
               pageSize={rows.length}
               rowsPerPageOptions={[rows.length]}
               onRowClick={params => setCrtRecordId(params.id)}
+              slots={{
+                toolbar: DataGridToolbar,
+              }}
             />
           </div>
         </Stack>
