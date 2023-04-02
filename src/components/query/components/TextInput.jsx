@@ -32,7 +32,7 @@ let TextInput = (props) => {
     <TextField
       {...textFieldProps}
       label={label}
-      onChange={event => onChange(event.target.value)}
+      onChange={event => onChange(event.target.value || undefined)}
     />
   )
 }
