@@ -17,18 +17,26 @@
 //  under the License.
 //
 import { createTheme } from '@mui/material/styles';
-import { lighten } from '@mui/material';
+import { lighten, darken } from '@mui/material';
 
-const primaryColor = "#106DB5"; // "#0bf" for dark mode
+const mode = "light";
+const primaryColor = mode === "light" ? "#106DB5" : "#0bf";
 const secondaryColor = "#c6934b";
+const bgColor = mode === "light" ? "#fff" : "#121212";
+const fade = mode === "light" ? lighten : darken;
 
 const appTheme = createTheme({
   palette: {
+    mode: mode,
     primary: {
       main: primaryColor,
     },
     secondary: {
       main: secondaryColor,
+    },
+    background: {
+      default: bgColor,
+      paper: bgColor,
     },
   },
   components: {
@@ -63,7 +71,7 @@ const appTheme = createTheme({
         },
         filledPrimary: {
           color: primaryColor,
-          backgroundColor: lighten(primaryColor, .8),
+          backgroundColor: fade(primaryColor, .8),
           fontWeight: "500",
         },
       },
@@ -77,7 +85,7 @@ const appTheme = createTheme({
       styleOverrides: {
         colorInfo: {
           fontWeight: "bold",
-          backgroundColor: "rgba(0,0,0,.04)",
+          backgroundColor: fade(primaryColor, .95),
         },
       },
     },

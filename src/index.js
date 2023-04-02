@@ -14,7 +14,7 @@ root.render(
   <StyledEngineProvider injectFirst>
     <ThemeProvider theme={appTheme}>
       <CssBaseline />
-      <Paper elevation={0} sx={{ px: 4, py: 2, height: "100vh"}}>
+      <Paper elevation={0} sx={{ px: 4, py: 8, minHeight: "100vh"}}>
         <ArchiveApp />
       </Paper>
     </ThemeProvider>

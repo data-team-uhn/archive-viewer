@@ -59,9 +59,9 @@ let ArchiveApp = (props) => {
   // 2. ArchiveViewer component (query form and results)
   // 3. Bottom appbar with information links
   return (
-    <Stack spacing={8}>
+    <Stack>
       <AppBar>
-        <Toolbar sx={{justifyContent: "space-between", mx: 1}}>
+        <Toolbar sx={{justifyContent: "space-between"}}>
           <Logo width="64px" full />
           <UserMenu />
         </Toolbar>
@@ -74,7 +74,7 @@ let ArchiveApp = (props) => {
               key={footerLinkConfig.source}
               variant="text"
               size="small"
-              color="secondary"
+              color="primary"
               label={footerLinkConfig.label}
               title={footerLinkConfig.title}
               dynamic
