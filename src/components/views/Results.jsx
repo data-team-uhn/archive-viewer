@@ -49,6 +49,7 @@ import SectionDivider from "../utils/SectionDivider";
 import { serializeGraphQLQuery, GRAPHQL_QUERY_ARGUMENT, camelCaseToWords } from "../utils/utils";
 
 import QueryConfig from "../../config/queryConfig.json";
+import AppConfig from "../../config/appConfig.json";
 
 import resultsIntro from "../../docs/results.md";
 
@@ -58,17 +59,12 @@ const GridToolbarExport = ({ csvOptions, printOptions, ...other }) => (
   </GridToolbarExportContainer>
 );
 
-function DataGridToolbar() {
+function DataGridToolbar(params) {
   return (
     <GridToolbarContainer sx={{p:2}}>
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
-      <GridToolbarExport
-        printOptions={{
-          hideFooter: true,
-          hideToolbar: true,
-        }}
-      />
+      <GridToolbarExport csvOptions={params?.csvOptions}/>
       <GridToolbarQuickFilter sx={{ml: 'auto'}}/>
     </GridToolbarContainer>
   );
@@ -133,6 +129,10 @@ export default function Results (props) {
   // Rendering
   //
 
+  const requiredFields = QueryConfig.requiredFields.map(group => group.fields).flat();
+  const exportFileName = AppConfig.exportFileNamePrefix +
+    requiredFields.map(f => query?.[QUERY_FIELD][f.name]).filter(v=>v).join("_");
+
   return (columns && <>
     <Card>
       <CardActions sx={{pb: 0}}>
@@ -169,6 +169,9 @@ export default function Results (props) {
               onRowClick={params => setCrtRecordId(params.id)}
               slots={{
                 toolbar: DataGridToolbar,
+              }}
+              slotProps={{
+                toolbar: { csvOptions: { fileName: exportFileName } }
               }}
             />
           </div>
