@@ -170,7 +170,7 @@ let QueryFormContainer = (props) => {
   const [ expanded, setExpanded ] = useState(true);
 
   useEffect(() => {
-    query && setExpanded(false);
+    setExpanded(!query);
   }, [query]);
 
   return (

@@ -30,12 +30,18 @@ import {
 } from '@mui/x-data-grid';
 
 import {
+  Button,
   Card,
+  CardActions,
   CardContent,
   CardHeader,
+  IconButton,
   LinearProgress,
   Stack,
+  Tooltip,
 } from "@mui/material";
+
+import ClearIcon from '@mui/icons-material/PlaylistRemove';
 
 import FormattedText from "../utils/FormattedText";
 import RecordViewer from "./RecordViewer";
@@ -81,7 +87,7 @@ const GRAPHQL_TO_DATAGRID_TYPE = {
 };
 
 export default function Results (props) {
-  const { queryDefinition, query } = props;
+  const { queryDefinition, query, onClear } = props;
 
   const [ rows, setRows ] = useState();
   const [ columns, setColumns ] = useState();
@@ -129,7 +135,20 @@ export default function Results (props) {
 
   return (columns && <>
     <Card>
-      <CardHeader title={
+      <CardActions sx={{pb: 0}}>
+        <Button color="error" startIcon={<ClearIcon/>}
+          sx={{display: {xs: "none", sm: "inline-flex"}, mb:-2}}
+          onClick={onClear}
+        >
+          Clear results
+        </Button>
+        <Tooltip title="Clear results">
+          <IconButton color="error" onClick={onClear} sx={{display: {sm: "none"}, mb:-2}}>
+            <ClearIcon/>
+          </IconButton>
+        </Tooltip>
+      </CardActions>
+      <CardHeader sx={{pt:0}} title={
         <SectionDivider
           color={rows ? rows.length ? undefined : "error" : "secondary"}
           title={`${rows ? rows.length || "No" : "Fetching"} result${rows?.length === 1 ? '' : 's'}`}

@@ -33,6 +33,7 @@ export default function ArchiveViewer (props) {
   const [ queryDefinitions, setQueryDefinitions ] = useState([]);
   const [ crtQueryDefinition, setCrtQueryDefinition ] = useState();
   const [ crtQuery, setCrtQuery ] = useState();
+  const [ showResults, setShowResults ] = useState();
 
   useEffect(() => {
     fetch(QueryConfig.url + GRAPHQL_INTROSPECTION_QUERY)
@@ -94,10 +95,14 @@ export default function ArchiveViewer (props) {
         onSearch={(dataSource, query) => {
           setCrtQueryDefinition(dataSource);
           setCrtQuery(query);
+          setShowResults(true);
         }}
+        resultsVisible={showResults}
       />
-      { crtQueryDefinition && crtQuery &&
-        <Results queryDefinition={crtQueryDefinition} query={crtQuery} />
+      { showResults && crtQueryDefinition && crtQuery &&
+        <Results queryDefinition={crtQueryDefinition} query={crtQuery}
+          onClear={() => setShowResults(false)}
+        />
       }
     </Stack>
   );

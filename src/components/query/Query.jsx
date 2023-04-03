@@ -30,7 +30,7 @@ import { GRAPHQL_QUERY_ARGUMENT } from "../utils/utils";
 import QueryConfig from "../../config/queryConfig.json";
 
 export default function Query (props) {
-  const { dataSources, onSearch } = props;
+  const { dataSources, onSearch, resultsVisible } = props;
 
   const [ requiredFields, setRequiredFields ] = useState();
   const [ optionalFields, setOptionalFields ] = useState();
@@ -73,6 +73,14 @@ export default function Query (props) {
     });
     return fields;
   }
+
+  // Erase the last search query when the results should not be displayed
+  useEffect(() => {
+    if (!resultsVisible) {
+      setLastSearchQuery();
+      setSearchLaunched(false);
+    }
+  }, [resultsVisible]);
 
   // When an input value changes, update the query object
   // Also reset searchLaunched to mark that the displayed (if any) data no longer matches the query
