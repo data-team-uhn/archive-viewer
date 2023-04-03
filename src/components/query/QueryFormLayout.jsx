@@ -181,7 +181,7 @@ let QueryFormContainer = (props) => {
           <Grid container direction="row" spacing={2}>
             { children.map((c, i) => <Grid item xs={12} md={6} key={i}>{ c }</Grid>) }
           </Grid>
-          <CardActions>
+          <CardActions sx={{zoom: {xs: .85, sm: 1}}}>
             { query &&
               <Button startIcon={<DownIcon />} onClick={() => setExpanded(false)}>
                 Hide form
