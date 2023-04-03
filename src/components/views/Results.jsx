@@ -88,6 +88,7 @@ export default function Results (props) {
   const [ rows, setRows ] = useState();
   const [ columns, setColumns ] = useState();
   const [ crtRecordId, setCrtRecordId ] = useState();
+  const [ crtField, setCrtField ] = useState();
 
   const QUERY_FIELD = GRAPHQL_QUERY_ARGUMENT.name;
 
@@ -166,7 +167,17 @@ export default function Results (props) {
               disableRowSelectionOnClick
               pageSize={rows.length}
               rowsPerPageOptions={[rows.length]}
-              onRowClick={params => setCrtRecordId(params.id)}
+              onRowClick={(params, event) => {
+                event?.preventDefault();
+                setCrtRecordId(params.id);
+              }}
+              onCellClick={(params, event) => {
+                if (params.field != '__check__') {
+                  event.preventDefault();
+                  setCrtRecordId(params.id);
+                  setCrtField(params.field);
+                }
+              }}
               slots={{
                 toolbar: DataGridToolbar,
               }}
@@ -187,6 +198,7 @@ export default function Results (props) {
         dataSource={camelCaseToWords(queryDefinition?.name)}
         id={`${crtRecordId + 1}`}
         data={rows?.[crtRecordId]}
+        highlightedField={crtField}
         fieldsDefinition={columns}
         query={query?.[QUERY_FIELD]}
       />

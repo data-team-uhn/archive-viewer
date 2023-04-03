@@ -21,7 +21,9 @@ import PropTypes from "prop-types";
 
 import {
   DialogContent,
-  Grid,
+  List,
+  ListItem,
+  ListItemText,
   Typography,
 } from "@mui/material";
 
@@ -33,7 +35,7 @@ import QueryConfig from "../../config/queryConfig.json";
  * A component that renders a dialog with the data associated with a specific record
  */
 function RecordViewer(props) {
-  const { dataSource, id, data, fieldsDefinition, query, open, onClose } = props;
+  const { dataSource, id, data, fieldsDefinition, highlightedField, query, open, onClose } = props;
 
   const requiredFields = QueryConfig.requiredFields.map(group => group.fields).flat();
 
@@ -57,12 +59,16 @@ function RecordViewer(props) {
       onClose={onClose}
     >
       <DialogContent dividers>
-        <Grid container spacing={2} direction="column">
-          { fieldsDefinition.map(f => <Grid item key={f.field}>
-            <Typography variant="subtitle2">{f.headerName}:</Typography>
-            <Typography color="textSecondary">{ data?.[f.field] }</Typography>
-          </Grid>) }
-        </Grid>
+        <List dense disablePadding>
+          { fieldsDefinition.map(f =>
+            <ListItem key={f.field} selected={f.field == highlightedField}>
+              <ListItemText
+                primary={`${f.headerName}:`}
+                secondary={data?.[f.field]}
+              />
+            </ListItem>
+            ) }
+        </List>
       </DialogContent>
     </ResponsiveDialog>
   )
