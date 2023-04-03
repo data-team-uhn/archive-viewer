@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkarchive_viewer=self.webpackChunkarchive_viewer||[]).push([[217],{5217:function(e,i,t){t.r(i);i.default="\nThe Archive Viewer application provides patient, visit or order level views of historical data (prior to June 4th, 2022) from legacy systems that have since been archived into the Digital Health Platform. \n\nSee list below for all legacy systems available through the Archive Viewer:\n* BDM Pharmacy (Centricity)\n"}}]);
+//# sourceMappingURL=217.04453d81.chunk.js.map
