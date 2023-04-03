@@ -183,7 +183,7 @@ let QueryFormContainer = (props) => {
           </Grid>
           <CardActions>
             { query &&
-              <Button startIcon={<UpIcon />} onClick={() => setExpanded(false)}>
+              <Button startIcon={<DownIcon />} onClick={() => setExpanded(false)}>
                 Hide
               </Button>
             }
@@ -208,7 +208,7 @@ let QueryFormContainer = (props) => {
         { query && <>
           <Collapse in={!expanded}>
             <CardActions sx={{mt:2,mb:-5}}>
-              <Button startIcon={<DownIcon />} onClick={() => setExpanded(true)}>
+              <Button startIcon={<UpIcon />} onClick={() => setExpanded(true)}>
                 Show search form
               </Button>
             </CardActions>

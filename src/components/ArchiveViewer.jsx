@@ -88,7 +88,7 @@ export default function ArchiveViewer (props) {
   }
 
   return (
-    <Stack spacing={6} direction="column">
+    <Stack spacing={2} direction="column">
       <Query
         dataSources={queryDefinitions}
         onSearch={(dataSource, query) => {
