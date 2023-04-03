@@ -184,7 +184,7 @@ let QueryFormContainer = (props) => {
           <CardActions>
             { query &&
               <Button startIcon={<DownIcon />} onClick={() => setExpanded(false)}>
-                Hide
+                Hide form
               </Button>
             }
             <Button
@@ -193,7 +193,7 @@ let QueryFormContainer = (props) => {
               onClick={onReset}
               disabled={resetDisabled}
             >
-              Clear
+              Clear form
            </Button>
             <Button
               type="submit"
@@ -204,16 +204,17 @@ let QueryFormContainer = (props) => {
               Search
             </Button>
           </CardActions>
+          { query && <CardHeader title={<SectionDivider title="Your last search" />} /> }
         </Collapse>
         { query && <>
           <Collapse in={!expanded}>
-            <CardActions sx={{mt:2,mb:-5}}>
+            <CardActions sx={{mt:2,mb:-3}}>
               <Button startIcon={<UpIcon />} onClick={() => setExpanded(true)}>
                 Show search form
               </Button>
             </CardActions>
           </Collapse>
-          <CardHeader title={<SectionDivider title="Your last search:"/>} />
+          { !expanded && <CardHeader title={<Divider />} />}
           <CardContent>
             <QuerySummary query={query} requiredFields={requiredFields} />
           </CardContent>
