@@ -21,6 +21,7 @@ import React, { useEffect, useState } from "react";
 
 import {
   DataGrid,
+  GridActionsCellItem,
   GridToolbarContainer,
   GridToolbarColumnsButton,
   GridToolbarFilterButton,
@@ -42,6 +43,7 @@ import {
 } from "@mui/material";
 
 import ClearIcon from '@mui/icons-material/PlaylistRemove';
+import ViewIcon from '@mui/icons-material/FindInPage';
 
 import FormattedText from "../utils/FormattedText";
 import RecordViewer from "./RecordViewer";
@@ -95,18 +97,40 @@ export default function Results (props) {
   // When we know the query definition, build the column definitions
   useEffect(() => {
     const fieldDefs = queryDefinition?.type?.fields;
-    setColumns(fieldDefs?.map(f => ({
-      field: f.name,
-      headerName: camelCaseToWords(f.name),
-      type: GRAPHQL_TO_DATAGRID_TYPE[f.type.name] || (f.type.enumValues && 'singleSelect'),
-      valueOptions: f.type.enumValues?.map(v => v.name),
-      width: ['String', 'Time'].includes(f.type.name) ? 180 : 100,
-      valueGetter: (
-        ['Date', 'Time'].includes(f.type.name) ?
-          ({ value }) => value && new Date(value)
-        : undefined
+    setColumns([
+      {
+        field: 'actions',
+        headerName: "",
+        type: 'actions',
+        width: 30,
+        getActions: (params) => [
+          <GridActionsCellItem
+            icon={
+              <Tooltip title="View record">
+                <ViewIcon/>
+              </Tooltip>
+            }
+            onClick={() => setCrtRecordId(params.id)}
+            label="View record"
+          />,
+        ]
+      },
+      ...(
+        fieldDefs?.map(f => ({
+          field: f.name,
+          headerName: camelCaseToWords(f.name),
+          type: GRAPHQL_TO_DATAGRID_TYPE[f.type.name] || (f.type.enumValues && 'singleSelect'),
+          valueOptions: f.type.enumValues?.map(v => v.name),
+          width: ['String', 'Time'].includes(f.type.name) ? 180 : 100,
+          valueGetter: (
+            ['Date', 'Time'].includes(f.type.name) ?
+              ({ value }) => value && new Date(value)
+            : undefined
+          )
+        }))
+        || []
       )
-    })));
+    ]);
   }, [queryDefinition]);
 
   // When the query is built, serialize it and launch the search

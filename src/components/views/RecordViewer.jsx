@@ -60,7 +60,7 @@ function RecordViewer(props) {
     >
       <DialogContent dividers>
         <List dense disablePadding>
-          { fieldsDefinition.map(f =>
+          { fieldsDefinition.filter(f => f.type != 'actions').map(f =>
             <ListItem key={f.field} selected={f.field == highlightedField}>
               <ListItemText
                 primary={`${f.headerName}:`}
