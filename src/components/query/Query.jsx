@@ -30,7 +30,7 @@ import { GRAPHQL_QUERY_ARGUMENT } from "../utils/utils";
 import QueryConfig from "../../config/queryConfig.json";
 
 export default function Query (props) {
-  const { dataSources, onDataSourceSelected, onSearch } = props;
+  const { dataSources, onSearch } = props;
 
   const [ requiredFields, setRequiredFields ] = useState();
   const [ optionalFields, setOptionalFields ] = useState();
@@ -92,7 +92,6 @@ export default function Query (props) {
   // When the data source changes, reset searchLaunched to mark that the displayed (if any) data no longer matches the query
   useEffect(() => {
     setSearchLaunched(false);
-    onDataSourceSelected(dataSource);
   }, [dataSource?.name]);
 
   // Check if enough required fields are provided for launching the search
@@ -108,7 +107,7 @@ export default function Query (props) {
     event?.preventDefault();
     setSearchLaunched(true);
     setLastSearchQuery({...query?.[defaultQueryArg?.name], "dataSource": dataSource?.label});
-    onSearch(query);
+    onSearch(dataSource, query);
   };
 
   const isFormClear = () => (

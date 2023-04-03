@@ -91,13 +91,12 @@ export default function ArchiveViewer (props) {
     <Stack spacing={6} direction="column">
       <Query
         dataSources={queryDefinitions}
-        onDataSourceSelected={(newValue) => {
-          setCrtQueryDefinition(newValue);
-          setCrtQuery();
+        onSearch={(dataSource, query) => {
+          setCrtQueryDefinition(dataSource);
+          setCrtQuery(query);
         }}
-        onSearch={setCrtQuery}
       />
-      { crtQuery &&
+      { crtQueryDefinition && crtQuery &&
         <Results queryDefinition={crtQueryDefinition} query={crtQuery} />
       }
     </Stack>

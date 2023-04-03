@@ -104,7 +104,7 @@ export default function Results (props) {
         : undefined
       )
     })));
-  }, [queryDefinition?.type]);
+  }, [queryDefinition]);
 
   // When the query is built, serialize it and launch the search
   useEffect(() => {
@@ -114,7 +114,7 @@ export default function Results (props) {
       .then(json => {
         processResults(json);
       });
-  }, [query]);
+  }, [query, queryDefinition]);
 
   // -------------------------------------------------------------------------
   // Process the results of a query - record the rows
