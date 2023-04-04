@@ -113,6 +113,10 @@ export default function QueryForm (props) {
       resetDisabled={resetDisabled}
       query={lastSearchQuery}
       requiredFields={requiredFields?.map(group => group.fields).flat()}
+      childrenSizes={
+        (satisfiedRequiredGroup || requiredFields.length == 1)
+        && [{xs:12, sm: 6, md: 4}, {xs:12, sm: 6, md: 8}]
+      }
     >
       <QuerySection maxWidth="sm" divider="or" title="Required" color="primary">
         { satisfiedRequiredGroup ?

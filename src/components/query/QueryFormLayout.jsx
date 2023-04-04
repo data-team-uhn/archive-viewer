@@ -165,7 +165,8 @@ QuerySummary.propTypes = {
 // are displayed
 //
 let QueryFormContainer = (props) => {
-  const { intro, onSubmit, submitDisabled, onReset, resetDisabled, children, query, requiredFields } = props;
+  const { intro, onSubmit, submitDisabled, onReset, resetDisabled,
+    children, childrenSizes, query, requiredFields } = props;
 
   const [ expanded, setExpanded ] = useState(true);
 
@@ -179,7 +180,9 @@ let QueryFormContainer = (props) => {
         <Collapse in={expanded}>
           { intro && <CardHeader title={<FormattedText variant="body2">{ intro }</FormattedText>} /> }
           <Grid container direction="row" spacing={2}>
-            { children.map((c, i) => <Grid item xs={12} md={6} key={i}>{ c }</Grid>) }
+            { children.map((c, i) =>
+              <Grid item {...(childrenSizes?.[i] ?? {xs: 12, md: 6})} key={i}>{ c }</Grid>
+            ) }
           </Grid>
           <CardActions sx={{zoom: {xs: .85, sm: 1}}}>
             { query &&
@@ -233,6 +236,7 @@ QueryFormContainer.propTypes = {
   query: PropTypes.object,
   requiredFields: PropTypes.arrayOf(PropTypes.object),
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node)]),
+  childrenSizes: PropTypes.arrayOf(PropTypes.object),
 };
 
 // -------------------------------------------------------------------------
