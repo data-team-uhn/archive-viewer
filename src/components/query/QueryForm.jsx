@@ -81,9 +81,19 @@ export default function QueryForm (props) {
     );
   }
 
+  const getSatisfiedRequiredGroup = () => {
+    let result = requiredFields.find(group =>
+      group.fields.filter(f => f.value).length >= group.min
+    );
+    return result && {fields: result.fields.filter(f => f.value)};
+  }
+
   const dataSourceHasAutoFocus = () => (
+    !!getSatisfiedRequiredGroup() ||
     !requiredFields.map(r => r.fields).flat().some(f => f.autoFocus)
   );
+
+  const satisfiedRequiredGroup = getSatisfiedRequiredGroup();
 
   // Render fields in this order:
   // 1. required default query fields as specified by queryConfig
@@ -105,7 +115,12 @@ export default function QueryForm (props) {
       requiredFields={requiredFields?.map(group => group.fields).flat()}
     >
       <QuerySection maxWidth="sm" divider="or" title="Required" color="primary">
-        { requiredFields.map((subset, index) =>
+        { satisfiedRequiredGroup ?
+          <QueryFieldset
+            fieldset={satisfiedRequiredGroup}
+            displayField={displayDefaultQueryField}
+          />
+        : requiredFields.map((subset, index) =>
           <QueryFieldset
             key={index}
             fieldset={subset}
@@ -115,7 +130,7 @@ export default function QueryForm (props) {
       </QuerySection>
       <QuerySection title="Optional" direction="column">
         <QueryFieldset
-          fieldset={{label: "Refine your search", fields: optionalFields}}
+          fieldset={{label: satisfiedRequiredGroup ? "" : "Refine your search", fields: optionalFields}}
           displayField={displayDefaultQueryField}
         />
         <Autocomplete
