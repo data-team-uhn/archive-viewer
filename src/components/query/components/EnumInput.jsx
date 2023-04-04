@@ -36,7 +36,7 @@ let EnumInput = (props) => {
       openOnFocus
       value={value || null}
       options={enumValues.map(v => v.name)}
-      onChange={(evt, val) => onChange(val)}
+      onChange={(evt, val) => onChange(val || undefined)}
       renderInput={(params) =>
         <TextField
           {...params}

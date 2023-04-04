@@ -43,7 +43,7 @@ let DateTimeInput = (props) => {
       setDate(val);
       onChange(toString(val));
     } else {
-      onChange('');
+      onChange();
     }
   }
 
