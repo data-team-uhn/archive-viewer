@@ -21,7 +21,7 @@ import React, { useState, useEffect } from "react";
 
 import {
   AppBar,
-  Stack,
+  Paper,
   Toolbar,
 } from "@mui/material";
 
@@ -59,7 +59,7 @@ let ArchiveApp = (props) => {
   // 2. ArchiveViewer component (query form and results)
   // 3. Bottom appbar with information links
   return (
-    <Stack>
+    <Paper elevation={0} sx={{px: 4, py: 8, minHeight: "100vh"}}>
       <AppBar>
         <Toolbar sx={{justifyContent: "space-between"}}>
           <Logo width="64px" full />
@@ -85,7 +85,7 @@ let ArchiveApp = (props) => {
           ))}
         </Toolbar>
       </AppBar>
-    </Stack>
+    </Paper>
   );
 };
 

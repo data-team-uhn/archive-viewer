@@ -1,6 +1,5 @@
 import React from 'react';
 import * as ReactDOMClient from 'react-dom/client';
-import { Paper } from '@mui/material';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -14,9 +13,7 @@ root.render(
   <StyledEngineProvider injectFirst>
     <ThemeProvider theme={appTheme}>
       <CssBaseline />
-      <Paper elevation={0} sx={{ px: 4, py: 8, minHeight: "100vh"}}>
-        <ArchiveApp />
-      </Paper>
+      <ArchiveApp />
     </ThemeProvider>
   </StyledEngineProvider>
 );
