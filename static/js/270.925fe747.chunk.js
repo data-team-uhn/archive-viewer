@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkarchive_viewer=self.webpackChunkarchive_viewer||[]).push([[270],{270:function(e,a,i){e.exports=i.p+"static/media/query.32aad52459dd1965af77.md"}}]);
