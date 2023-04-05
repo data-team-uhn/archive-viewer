@@ -22,7 +22,9 @@ import React from "react";
 import {
   Autocomplete,
   InputAdornment,
+  Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 
 import InfoDisplay from "../utils/InfoDisplay";
@@ -44,7 +46,7 @@ import queryIntro from "../../docs/query.md";
 
 export default function QueryForm (props) {
   const { requiredFields, optionalFields,
-    dataSources, dataSource, onDataSourceChange,
+    requireDataSource, dataSources, dataSource, onDataSourceChange,
     query, defaultQueryArg, onQueryInputValueChange,
     onSubmit, submitDisabled, lastSearchQuery, onReset, resetDisabled
   } = props;
@@ -95,51 +97,15 @@ export default function QueryForm (props) {
 
   const satisfiedRequiredGroup = getSatisfiedRequiredGroup();
 
-  // Render fields in this order:
-  // 1. required default query fields as specified by queryConfig
-  // 2. optional default query fields as specified by queryConfig
-  // 3. the data source dropdown
-  // 4. all other fields supported by the selected data source
-  // 5. search button, which is disabled if either:
-  //    * none of the required query fields have a value specified
-  //    * the data source, which is also required for now, hasn't been selected yet
-  //    * the search has been just launched, and the results currently reflect the query
-  return (
-    <QueryFormContainer
-      intro={queryIntro}
-      onSubmit={onSubmit}
-      submitDisabled={submitDisabled}
-      onReset={onReset}
-      resetDisabled={resetDisabled}
-      query={lastSearchQuery}
-      requiredFields={requiredFields?.map(group => group.fields).flat()}
-      childrenSizes={
-        (satisfiedRequiredGroup || requiredFields.length == 1)
-        && [{xs:12, sm: 6, md: 4}, {xs:12, sm: 6, md: 8}]
-      }
-    >
-      <QuerySection maxWidth="sm" divider="or" title="Required" color="primary">
-        { satisfiedRequiredGroup ?
-          <QueryFieldset
-            fieldset={satisfiedRequiredGroup}
-            displayField={displayDefaultQueryField}
-          />
-        : requiredFields.map((subset, index) =>
-          <QueryFieldset
-            key={index}
-            fieldset={subset}
-            displayField={displayDefaultQueryField}
-          />
-        ) }
-      </QuerySection>
-      <QuerySection title="Optional" direction="column">
-        <QueryFieldset
-          fieldset={{label: satisfiedRequiredGroup ? "" : "Refine your search", fields: optionalFields}}
-          displayField={displayDefaultQueryField}
-        />
+  const withLabels = !satisfiedRequiredGroup;
+
+  const renderDataSource = (label) => (
+    <QuerySection title="Legacy system" color={requireDataSource ? "primary" : undefined}>
+      <Stack spacing={2} sx={{width: "100%"}}>
+        { withLabels && <Typography variant="subtitle2">{label}</Typography> }
         <Autocomplete
           sx={{
-            minWidth: "240px",
+            width: "100%",
             "&:hover .MuiInputAdornment-root": {
               visibility: "visible"
             },
@@ -177,6 +143,59 @@ export default function QueryForm (props) {
               />
           }
         />
+      </Stack>
+    </QuerySection>
+  );
+
+  // Render fields in this order:
+  // 1. required default query fields as specified by queryConfig
+  // 2. optional default query fields as specified by queryConfig
+  // 3. the data source dropdown
+  // 4. all other fields supported by the selected data source
+  // 5. search button, which is disabled if either:
+  //    * none of the required query fields have a value specified
+  //    * the data source, which is also required for now, hasn't been selected yet
+  //    * the search has been just launched, and the results currently reflect the query
+  return (
+    <QueryFormContainer
+      intro={queryIntro}
+      onSubmit={onSubmit}
+      submitDisabled={submitDisabled}
+      onReset={onReset}
+      resetDisabled={resetDisabled}
+      query={lastSearchQuery}
+      requiredFields={[
+        ...(requiredFields?.map(group => group.fields).flat()),
+        ...(requireDataSource ? [{name: "dataSource"}] : [])
+      ]}
+      childrenSizes={
+        (satisfiedRequiredGroup || requiredFields.length == 1)
+        ? [{xs:12, sm: 6, lg: 3}, {xs:12, sm: 6, lg: 3}, {xs:12, sm: 12, lg: 6}]
+        : [{xs:12, lg: 5}, {xs:12, lg: 2}, {xs:12, lg: 5}]
+      }
+    >
+      <QuerySection maxWidth="sm" divider="or" title="Required" color="primary">
+        { satisfiedRequiredGroup ?
+          <QueryFieldset
+            fieldset={satisfiedRequiredGroup}
+            displayField={displayDefaultQueryField}
+          />
+        : requiredFields.map((subset, index) =>
+          <QueryFieldset
+            key={index}
+            fieldset={subset}
+            displayField={displayDefaultQueryField}
+          />
+        ) }
+      </QuerySection>
+      { renderDataSource(withLabels ? "Select a database:" : "") }
+      <QuerySection title="Optional" direction="column">
+        <QueryFieldset
+          fieldset={{label: withLabels ? "Refine your search" : "", fields: optionalFields}}
+          displayField={displayDefaultQueryField}
+        />
+        { /* List here any arguments that are supported by the selected data source and not yet
+             listed in the `required` section: */ }
         { dataSource?.args?.filter(arg => arg?.inputFields).map(arg => arg.inputFields.map(f =>
           <QueryFieldset key={`${arg.name}-${f.name}`}
             fieldset={{fields: arg.inputFields}}

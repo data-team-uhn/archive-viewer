@@ -151,6 +151,7 @@ export default function Query (props) {
     <QueryForm
       requiredFields={requiredFields}
       optionalFields={optionalFields}
+      requireDataSource={QueryConfig?.requireDataSource}
       dataSources={dataSources}
       dataSource={dataSource}
       onDataSourceChange={setDataSource}

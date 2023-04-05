@@ -1,5 +1,6 @@
 {
   "url": "https://dhp-archive.dev.uhn.io/graphql?query=",
+  "requireDataSource": true,
   "requiredFields" : [{
     "min": 1,
     "fields" : [{

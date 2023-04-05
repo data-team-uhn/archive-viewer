@@ -116,6 +116,7 @@ let QuerySection = (props) => {
 };
 
 QuerySection.propTypes = {
+  title: PropTypes.string,
   direction: PropTypes.oneOf(["column", "row"]),
   maxWidth: PropTypes.oneOf(["xs", "sm", "md", "lg", "xl"]),
   outlined: PropTypes.bool,
