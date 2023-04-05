@@ -20,7 +20,7 @@
 import React, { useEffect, useState } from "react";
 
 import {
-  DataGrid,
+  DataGridPro,
   GridActionsCellItem,
   GridToolbarContainer,
   GridToolbarColumnsButton,
@@ -28,7 +28,7 @@ import {
   GridToolbarExportContainer,
   GridCsvExportMenuItem,
   GridToolbarQuickFilter,
-} from '@mui/x-data-grid';
+} from '@mui/x-data-grid-pro';
 
 import {
   Button,
@@ -184,7 +184,8 @@ export default function Results (props) {
         <Stack spacing={3}>
           { resultsIntro && <FormattedText variant="body2">{ resultsIntro }</FormattedText> }
           <div style={{ height: 600, width: '100%'}}>
-            <DataGrid
+            <DataGridPro
+              initialState={{ pinnedColumns: { left: ['__check__'], right: ['actions'] } }}
               rows={rows}
               columns={columns}
               checkboxSelection

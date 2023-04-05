@@ -6,6 +6,10 @@ import CssBaseline from '@mui/material/CssBaseline';
 import ArchiveApp from './components/ArchiveApp';
 import { appTheme } from "./appTheme";
 
+import { LicenseInfo } from '@mui/x-license-pro';
+import DevConfig from './config/devConfig.json';
+LicenseInfo.setLicenseKey(DevConfig.licenseKey);
+
 const container = document.getElementById('app');
 const root = ReactDOMClient.createRoot(container);
 
