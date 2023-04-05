@@ -48,13 +48,13 @@ import { camelCaseToWords } from '../utils/utils';
 // QueryFieldset displays a list of fields grouped under an optional label
 //
 let QueryFieldset =  (props) => {
-  const { fieldset, displayField, direction, spacing } = props;
+  const { fieldset, displayField, disableLabel, direction, spacing } = props;
 
-  const label = fieldset.label ?? (
+  const label = !disableLabel && (fieldset.label ?? (
     !(fieldset?.min) ? '' :
       fieldset.min === 1 ? "One of"
       : `Minimum ${fieldset.min} of`
-  );
+  ));
 
   return (fieldset?.fields?.length > 0 ?
     <Stack direction={direction} spacing={spacing} sx={{width: "100%"}}>
@@ -67,6 +67,7 @@ let QueryFieldset =  (props) => {
 QueryFieldset.propTypes = {
   fieldset: PropTypes.object.isRequired,
   displayField: PropTypes.func.isRequired,
+  disableLabel: PropTypes.bool,
   direction: PropTypes.oneOf(["row", "column"]),
   spacing: PropTypes.number,
 };

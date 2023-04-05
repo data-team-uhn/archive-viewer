@@ -17,7 +17,7 @@
 //  under the License.
 //
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Autocomplete,
@@ -51,9 +51,30 @@ export default function QueryForm (props) {
     onSubmit, submitDisabled, lastSearchQuery, onReset, resetDisabled
   } = props;
 
+  const [ satisfiedRequiredGroup, setSatisfiedRequiredGroup ] = useState();
+  const [ dataSourceFields, setDataSourceFields ] = useState();
+  const [ disableSectionTitles, setDisableSectionTitles ] = useState();
+  const [ disableFieldsetLabels, setDisableFieldsetLabels ] = useState();
+
+  // When requiredFields arrive, check if any of the required groups already has enough values
+  useEffect(() => {
+    setSatisfiedRequiredGroup(getSatisfiedRequiredGroup());
+  }, [requiredFields]);
+
+  // Display a compact version of the form without fieldset labels when
+  // we don't have to fill in the "Required" section
+  useEffect(() => {
+    setDisableFieldsetLabels(!!satisfiedRequiredGroup);
+  }, [satisfiedRequiredGroup]);
+
+  // When the data source changes, update the optional fields supported by it
+  useEffect(() => {
+    setDataSourceFields(dataSource?.args?.find(arg => arg.name === defaultQueryArg.name)?.inputFields);
+  }, [dataSource]);
+
   const displayDefaultQueryField = (field) => displayQueryField(field, defaultQueryArg, true);
 
-  const displayQueryField = (f, arg, includeDefaultFields) => {
+  const displayQueryField = (f, arg=defaultQueryArg, includeDefaultFields) => {
     const matchingDefaultField = [
       ...requiredFields.map(r => r.fields).flat(),
       ...optionalFields
@@ -95,14 +116,13 @@ export default function QueryForm (props) {
     !requiredFields.map(r => r.fields).flat().some(f => f.autoFocus)
   );
 
-  const satisfiedRequiredGroup = getSatisfiedRequiredGroup();
+  const hasOptionalFields = () => (optionalFields?.length > 0 || dataSourceFields?.length > 0);
+  const hasNarrowRequiredFields = () => (!!satisfiedRequiredGroup || requiredFields?.length === 1);
 
-  const withLabels = !satisfiedRequiredGroup;
-
-  const renderDataSource = (label) => (
+  const renderDataSource = () => (
     <QuerySection title="Legacy system" color={requireDataSource ? "primary" : undefined}>
       <Stack spacing={2} sx={{width: "100%"}}>
-        { withLabels && <Typography variant="subtitle2">{label}</Typography> }
+        { !disableFieldsetLabels && <Typography variant="subtitle2">Select a database:</Typography> }
         <Autocomplete
           sx={{
             width: "100%",
@@ -169,12 +189,16 @@ export default function QueryForm (props) {
         ...(requireDataSource ? [{name: "dataSource"}] : [])
       ]}
       childrenSizes={
-        (satisfiedRequiredGroup || requiredFields.length == 1)
-        ? [{xs:12, sm: 6, lg: 3}, {xs:12, sm: 6, lg: 3}, {xs:12, sm: 12, lg: 6}]
-        : [{xs:12, lg: 5}, {xs:12, lg: 2}, {xs:12, lg: 5}]
+        hasOptionalFields() ?
+          hasNarrowRequiredFields() ?
+            [{xs:12, sm: 6, lg: 3}, {xs:12, sm: 6, lg: 3}, {xs:12, sm: 12, lg: 6}]
+          : [{xs:12, lg: 5}, {xs:12, lg: 3}, {xs:12, lg: 4}]
+        : hasNarrowRequiredFields() ?
+           [{xs:12, sm: 6, lg: 3}, {xs:12, sm: 6, lg: 9}]
+          : [{xs:12, lg: 5}, {xs:12, lg: 7}]
       }
     >
-      <QuerySection maxWidth="sm" divider="or" title="Required" color="primary">
+      <QuerySection divider="or" title="Required" color="primary">
         { satisfiedRequiredGroup ?
           <QueryFieldset
             fieldset={satisfiedRequiredGroup}
@@ -188,21 +212,27 @@ export default function QueryForm (props) {
           />
         ) }
       </QuerySection>
-      { renderDataSource(withLabels ? "Select a database:" : "") }
-      <QuerySection title="Optional" direction="column">
-        <QueryFieldset
-          fieldset={{label: withLabels ? "Refine your search" : "", fields: optionalFields}}
-          displayField={displayDefaultQueryField}
-        />
-        { /* List here any arguments that are supported by the selected data source and not yet
-             listed in the `required` section: */ }
-        { dataSource?.args?.filter(arg => arg?.inputFields).map(arg => arg.inputFields.map(f =>
-          <QueryFieldset key={`${arg.name}-${f.name}`}
-            fieldset={{fields: arg.inputFields}}
-            displayField={f => displayQueryField(f, arg)}
-          />
-        )) }
-      </QuerySection>
+      { renderDataSource() }
+      { hasOptionalFields() &&
+        <QuerySection title="Optional" direction="column">
+          { optionalFields?.length > 0 &&
+            <QueryFieldset
+              fieldset={{label: "Refine your search", fields: optionalFields}}
+              displayField={displayDefaultQueryField}
+              disableLabel={disableFieldsetLabels}
+            />
+          }
+          { /* List here any fields that are supported by the selected data source and not
+               already listed in the 'required' or `optional` section: */ }
+          { dataSourceFields?.length > 0 &&
+            <QueryFieldset
+              fieldset={{label: "Refine your search", fields: dataSourceFields}}
+              displayField={f => displayQueryField(f)}
+              disableLabel={disableFieldsetLabels || !!optionalFields.length}
+            />
+          }
+        </QuerySection>
+      }
     </QueryFormContainer>
   );
 };

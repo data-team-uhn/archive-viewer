@@ -68,7 +68,7 @@ let DateTimeRangeInput = (props) => {
   // when rendered as a child of a Stack
   return (<div>
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Grid container alignItems="center" direction="row" spacing={1} wrap="wrap">
+      <Grid container alignItems="center" direction="row" spacing={1} rowSpacing={2} wrap="wrap">
         <Grid item xs={true}>
           <PickerComponent
             label={`${label} after`}
