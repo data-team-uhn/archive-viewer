@@ -51,10 +51,19 @@ export default function QueryForm (props) {
     onSubmit, submitDisabled, lastSearchQuery, onReset, resetDisabled
   } = props;
 
+  const [ defaultFields, setDefaultFields ] = useState();
   const [ satisfiedRequiredGroup, setSatisfiedRequiredGroup ] = useState();
   const [ dataSourceFields, setDataSourceFields ] = useState();
   const [ disableSectionTitles, setDisableSectionTitles ] = useState();
   const [ disableFieldsetLabels, setDisableFieldsetLabels ] = useState();
+
+  // Get all default fields in one list
+  useEffect(() => {
+    setDefaultFields([
+      ...requiredFields.map(r => r.fields).flat(),
+      ...optionalFields
+    ]);
+  }, [requiredFields, optionalFields]);
 
   // When requiredFields arrive, check if any of the required groups already has enough values
   useEffect(() => {
@@ -69,16 +78,22 @@ export default function QueryForm (props) {
 
   // When the data source changes, update the optional fields supported by it
   useEffect(() => {
-    setDataSourceFields(dataSource?.args?.find(arg => arg.name === defaultQueryArg.name)?.inputFields);
-  }, [dataSource]);
+    setDataSourceFields(() => {
+      if (!defaultFields) return;
+      return (
+        dataSource?.args?.find(
+          arg => arg.name === defaultQueryArg.name
+        )?.inputFields?.filter(
+          f => !defaultFields.some(df => df.name === f.name)
+        )
+      )
+    });
+  }, [defaultFields, dataSource]);
 
   const displayDefaultQueryField = (field) => displayQueryField(field, defaultQueryArg, true);
 
   const displayQueryField = (f, arg=defaultQueryArg, includeDefaultFields) => {
-    const matchingDefaultField = [
-      ...requiredFields.map(r => r.fields).flat(),
-      ...optionalFields
-    ].find(df => df.name === f.name);
+    const matchingDefaultField = defaultFields?.find(df => df.name === f.name);
 
     // if we've displayed this field elsewhere in the default fields group, skip
     if (!includeDefaultFields && matchingDefaultField) {
@@ -116,13 +131,23 @@ export default function QueryForm (props) {
     !requiredFields.map(r => r.fields).flat().some(f => f.autoFocus)
   );
 
-  const hasOptionalFields = () => (optionalFields?.length > 0 || dataSourceFields?.length > 0);
   const hasNarrowRequiredFields = () => (!!satisfiedRequiredGroup || requiredFields?.length === 1);
+  const hasNarrowRequiredSection = () => (hasNarrowRequiredFields() && !requireDataSource);
+  const hadRequiredDataSourceFieldset = () => (hasNarrowRequiredFields() && requireDataSource);
+  const hasDataSourceSection = () => (!hasNarrowRequiredFields() && requireDataSource);
+  const hasOptionalDataSourceFieldset = () => (!requireDataSource || dataSourceFields?.length > 0);
+  const hasOptionalFields = () => (optionalFields?.length > 0 || hasOptionalDataSourceFieldset());
 
-  const renderDataSource = () => (
+  const renderDataSourceSection = () => (
     <QuerySection title="Legacy system" color={requireDataSource ? "primary" : undefined}>
       <Stack spacing={2} sx={{width: "100%"}}>
         { !disableFieldsetLabels && <Typography variant="subtitle2">Select a database:</Typography> }
+        { renderDataSource() }
+      </Stack>
+    </QuerySection>
+  );
+
+  const renderDataSource = () => (
         <Autocomplete
           sx={{
             width: "100%",
@@ -163,8 +188,6 @@ export default function QueryForm (props) {
               />
           }
         />
-      </Stack>
-    </QuerySection>
   );
 
   // Render fields in this order:
@@ -189,16 +212,25 @@ export default function QueryForm (props) {
         ...(requireDataSource ? [{name: "dataSource"}] : [])
       ]}
       childrenSizes={
-        hasOptionalFields() ?
-          hasNarrowRequiredFields() ?
-            [{xs:12, sm: 6, lg: 3}, {xs:12, sm: 6, lg: 3}, {xs:12, sm: 12, lg: 6}]
-          : [{xs:12, lg: 5}, {xs:12, lg: 3}, {xs:12, lg: 4}]
-        : hasNarrowRequiredFields() ?
-           [{xs:12, sm: 6, lg: 3}, {xs:12, sm: 6, lg: 9}]
-          : [{xs:12, lg: 5}, {xs:12, lg: 7}]
+        hasNarrowRequiredSection() ?
+          /* optional section exists and includes dataSource */
+          [{sm: 12, md: 4}, {sm: 12, md: 8}]
+        : hasDataSourceSection() ?
+          /* wide required section and separate required data source */
+            hasOptionalFields() ?
+              [{lg: 5}, {lg: 3}, {lg: 4}]
+            : [{lg: 5}, {lg: 7}]
+          : hasOptionalFields() ?
+            /* wide required section, NO separate required data source */
+              [{lg: 6}, {lg: 6}]
+            : [{}] /* one section, always xs:12 */
       }
     >
-      <QuerySection divider="or" title="Required" color="primary">
+      <QuerySection
+        divider={hadRequiredDataSourceFieldset() ? undefined : "or"}
+        title="Required"
+        color="primary"
+      >
         { satisfiedRequiredGroup ?
           <QueryFieldset
             fieldset={satisfiedRequiredGroup}
@@ -211,24 +243,33 @@ export default function QueryForm (props) {
             displayField={displayDefaultQueryField}
           />
         ) }
+        { hadRequiredDataSourceFieldset() && renderDataSource() }
       </QuerySection>
-      { renderDataSource() }
+      { hasDataSourceSection() && renderDataSourceSection() }
       { hasOptionalFields() &&
-        <QuerySection title="Optional" direction="column">
-          { optionalFields?.length > 0 &&
-            <QueryFieldset
-              fieldset={{label: "Refine your search", fields: optionalFields}}
-              displayField={displayDefaultQueryField}
-              disableLabel={disableFieldsetLabels}
-            />
-          }
+        <QuerySection title="Optional" maxWidth="xl" spacing={6}>
           { /* List here any fields that are supported by the selected data source and not
                already listed in the 'required' or `optional` section: */ }
-          { dataSourceFields?.length > 0 &&
+          { hasOptionalDataSourceFieldset() &&
             <QueryFieldset
-              fieldset={{label: "Refine your search", fields: dataSourceFields}}
+              fieldset={{
+                label: /*!!optionalFields.length ? `\u00A0` :*/ "Refine your search:",
+                fields: dataSourceFields
+              }}
               displayField={f => displayQueryField(f)}
-              disableLabel={disableFieldsetLabels || !!optionalFields.length}
+              disableLabel={disableFieldsetLabels}
+            >
+              { !requireDataSource && renderDataSource() }
+            </QueryFieldset>
+          }
+          { optionalFields?.length > 0 &&
+            <QueryFieldset
+              fieldset={{
+                label: hasOptionalDataSourceFieldset() ? `\u00A0` : "Refine your search",
+                fields: optionalFields
+              }}
+              displayField={displayDefaultQueryField}
+              disableLabel={disableFieldsetLabels}
             />
           }
         </QuerySection>

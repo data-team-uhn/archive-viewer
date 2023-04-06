@@ -48,17 +48,18 @@ import { camelCaseToWords } from '../utils/utils';
 // QueryFieldset displays a list of fields grouped under an optional label
 //
 let QueryFieldset =  (props) => {
-  const { fieldset, displayField, disableLabel, direction, spacing } = props;
+  const { fieldset, displayField, disableLabel, direction, spacing, children } = props;
 
   const label = !disableLabel && (fieldset.label ?? (
     !(fieldset?.min) ? '' :
-      fieldset.min === 1 ? "One of"
-      : `Minimum ${fieldset.min} of`
+      fieldset.min === 1 ? "One of:"
+      : `Minimum ${fieldset.min} of:`
   ));
 
-  return (fieldset?.fields?.length > 0 ?
+  return (children?.length > 0 || fieldset?.fields?.length > 0 ?
     <Stack direction={direction} spacing={spacing} sx={{width: "100%"}}>
-      { label && <Typography variant="subtitle2">{ label }:</Typography> }
+      { label && <Typography variant="subtitle2">{ label }</Typography> }
+      { children }
       { fieldset.fields?.map(displayField) }
     </Stack>
   : null);
@@ -70,6 +71,7 @@ QueryFieldset.propTypes = {
   disableLabel: PropTypes.bool,
   direction: PropTypes.oneOf(["row", "column"]),
   spacing: PropTypes.number,
+  children: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node)]),
 };
 
 QueryFieldset.defaultProps = {
@@ -81,14 +83,14 @@ QueryFieldset.defaultProps = {
 // QuerySection displays a list of fields grouped under an optional label
 //
 let QuerySection = (props) => {
-  const { title, color, direction, maxWidth, outlined, divider, spacing, children } = props;
+  const { title, color, direction, maxWidth, outlined, divider, spacing, rowSpacing, children } = props;
 
   const theme = useTheme();
   const verticalLayout = useMediaQuery(theme.breakpoints.down(maxWidth));
 
   let sectionContents = (
     <Stack
-      spacing={spacing}
+      spacing={verticalLayout || divider ? rowSpacing : spacing}
       justifyContent="space-between"
       direction={ direction ?? (verticalLayout ? "column" : "row") }
       divider={ divider &&
@@ -124,12 +126,14 @@ QuerySection.propTypes = {
   divider: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   color: PropTypes.string,
   spacing: PropTypes.number,
+  rowSpacing: PropTypes.number,
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node)]),
 };
 
 QuerySection.defaultProps = {
   maxWidth: "sm",
-  spacing: 2,
+  spacing: 6,
+  rowSpacing: 2,
 };
 
 // -------------------------------------------------------------------------
@@ -182,8 +186,8 @@ let QueryFormContainer = (props) => {
         <Collapse in={expanded}>
           { intro && <CardHeader title={<FormattedText variant="body2">{ intro }</FormattedText>} /> }
           <Grid container direction="row" spacing={2}>
-            { children.map((c, i) =>
-              <Grid item {...(childrenSizes?.[i] ?? {xs: 12, md: 6})} key={i}>{ c }</Grid>
+            { children.filter(c=>c).map((c, i) =>
+              <Grid item xs={12} {...(childrenSizes?.[i] ?? {md: 6})} key={i}>{ c }</Grid>
             ) }
           </Grid>
           <CardActions sx={{zoom: {xs: .85, sm: 1}}}>
