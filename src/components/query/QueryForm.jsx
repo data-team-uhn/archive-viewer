@@ -91,11 +91,12 @@ export default function QueryForm (props) {
     });
   }, [defaultFields, dataSource]);
 
-  const displayQueryField = (f, arg=defaultQueryArg, includeDefaultFields=true) => {
+  const displayQueryField = (f, excludeDefaultFields) => {
+    if (!f) return null;
     const matchingDefaultField = defaultFields?.find(df => df.name === f.name);
 
     // if we've displayed this field elsewhere in the default fields group, skip
-    if (!includeDefaultFields && matchingDefaultField) {
+    if (excludeDefaultFields && matchingDefaultField) {
       return null;
     }
 
@@ -106,18 +107,18 @@ export default function QueryForm (props) {
 
     return (
       <InputDisplay
-        key={f?.name}
+        key={f.name}
         autoFocus={f.autoFocus}
         label={f.label || camelCaseToWords(f?.name)}
-        value={matchingDefaultField?.value || query?.[arg.name]?.[f?.name] || ''}
+        value={matchingDefaultField?.value || query?.[defaultQueryArg.name]?.[f?.name] || ''}
         disabled={disabled}
         color={disabled ? "info" : undefined}
         onChange={value => {
           f?.type?.fields ?
             f.type.fields.forEach((subField, index) => {
-              onQueryInputValueChange(value[index], subField, arg)
+              onQueryInputValueChange(value[index], subField)
             })
-          : onQueryInputValueChange(value, f, arg)
+          : onQueryInputValueChange(value, f)
         }}
         {...f?.type}
       />
@@ -266,7 +267,7 @@ export default function QueryForm (props) {
                  already listed in the 'required' or `optional` section: */ }
             <QueryOptionalFields
               fields={dataSourceFields}
-              displayField={f => displayQueryField(f, defaultQueryArg, false)}
+              displayField={f => displayQueryField(f, true)}
               disableLabel={disableFieldsetLabels}
             >
               { renderDataSource() }

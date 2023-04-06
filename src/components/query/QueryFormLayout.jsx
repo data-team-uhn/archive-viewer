@@ -60,7 +60,7 @@ let QueryFieldset =  (props) => {
     <Stack direction={direction} spacing={spacing} sx={{width: "100%"}}>
       { label && <Typography variant="subtitle2">{ label }</Typography> }
       { children }
-      { fieldset.fields?.map(displayField) }
+      { fieldset.fields?.map(f => displayField(f)) }
     </Stack>
   : null);
 };
