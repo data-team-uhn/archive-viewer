@@ -61,7 +61,7 @@ export default function QueryForm (props) {
   useEffect(() => {
     setDefaultFields([
       ...requiredFields.map(r => r.fields).flat(),
-      ...optionalFields
+      ...optionalFields.map(o => o?.type?.fields ?? o).flat(),
     ]);
   }, [requiredFields, optionalFields]);
 
@@ -113,7 +113,13 @@ export default function QueryForm (props) {
         value={matchingDefaultField?.value || query?.[arg.name]?.[f?.name] || ''}
         disabled={disabled}
         color={disabled ? "info" : undefined}
-        onChange={value => onQueryInputValueChange(value, f, arg)}
+        onChange={value => {
+          f?.type?.fields ?
+            f.type.fields.forEach((subField, index) => {
+              onQueryInputValueChange(value[index], subField, arg)
+            })
+          : onQueryInputValueChange(value, f, arg)
+        }}
         {...f?.type}
       />
     );

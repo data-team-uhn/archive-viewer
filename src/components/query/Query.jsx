@@ -62,6 +62,10 @@ export default function Query (props) {
   const loadFieldsConfig = (config, urlSearchParams, autoFocus) => {
     let fields = config?.slice() || [];
     fields.forEach(f => {
+      if (f.type?.fields) {
+        f.type.fields = loadFieldsConfig(f.type.fields, urlSearchParams, autoFocus);
+        return;
+      }
       f.value = urlSearchParams.get(f?.name) || null;
       if (f.value) {
         onQueryInputValueChange(f.value, f);

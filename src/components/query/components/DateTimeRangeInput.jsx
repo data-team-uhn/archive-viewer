@@ -25,39 +25,38 @@ import {
 } from "@mui/material";
 import dayjs from 'dayjs';
 
+import { camelCaseToWords } from "../../utils/utils";
+
 // Internal, generic Date/Time range input field
 // Customized by the DateRangeInput and TimeRangeInput components
 // to be called via the QueryComponentManager in the QueryForm
 let DateTimeRangeInput = (props) => {
-  let { pickerComponent, dateFormat, toString, label, onChange, value, ...rest } = props;
+  let { pickerComponent, dateFormat, toString, label, onChange, fields } = props;
 
   const [ start, setStart ] = useState(null);
   const [ end, setEnd ] = useState(null);
 
   const PickerComponent = pickerComponent;
-  const RANGE_SEPARATOR = "...";
 
   // Load initial values, if any are provided
   useEffect(() => {
-    const range = value?.split(RANGE_SEPARATOR);
-    setStart(range?.[0] ? dayjs(range[0]) : null);
-    setEnd(range?.[1] ? dayjs(range[1]) : null);
-  }, [value]);
+    loadValue(fields?.[0]?.value, setStart);
+    loadValue(fields?.[1]?.value, setEnd);
+  }, [fields]);
+
+  const loadValue = (value, setter) => {
+    value && dayjs(value).isValid() && setter(dayjs(value));
+  }
 
   // Propagate any date change to the parent component
   const handleChange = (value, setter, getRangeLimits) => {
-    let newValue = dayjs(value, dateFormat, true).isValid() ? value : null;
+    let newValue = value.isValid() ? value : null;
     setter(newValue);
-    let range = getRangeLimits(newValue);
-    if (range.some(v => v)) {
-      onChange(`${toString(range[0])}${RANGE_SEPARATOR}${toString(range[1])}`)
-    } else {
-      onChange();
-    }
+    onChange(getRangeLimits(newValue).map(toString));
   }
 
   const commonProps = {
-    sx: {width: 210, minWidth: "100%"},
+    sx: {width: 150, minWidth: "100%"},
     format: dateFormat,
     disableFuture: true,
   };
@@ -69,23 +68,21 @@ let DateTimeRangeInput = (props) => {
       <Grid container alignItems="center" direction="row" spacing={1} rowSpacing={2} wrap="wrap">
         <Grid item xs={true}>
           <PickerComponent
-            label={`${label} after`}
+            label={camelCaseToWords(fields[0].name)}
             value={start}
             onChange={(value) => handleChange(value, setStart, (v) => ([v, end]))}
             maxDate={end}
             {...commonProps}
-            {...rest}
           />
         </Grid>
         <Grid item>—</Grid>
         <Grid item xs={true}>
           <PickerComponent
-            label={`${label} before`}
+            label={camelCaseToWords(fields[1].name)}
             value={end}
             onChange={(value) => handleChange(value, setEnd, (v) => ([start, v]))}
             minDate={start}
             {...commonProps}
-            {...rest}
           />
         </Grid>
       </Grid>
@@ -97,9 +94,9 @@ DateTimeRangeInput.propTypes = {
   pickerComponent: PropTypes.object.isRequired,
   dateFormat: PropTypes.string.isRequired,
   toString: PropTypes.func.isRequired,
-  sx: PropTypes.object,
   label: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+  fields: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default DateTimeRangeInput;

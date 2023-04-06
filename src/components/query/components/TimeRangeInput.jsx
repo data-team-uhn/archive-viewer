@@ -30,7 +30,7 @@ let TimeRangeInput = (props) => (
   <DateTimeRangeInput
      pickerComponent={DateTimePicker}
      dateFormat="YYYY-MM-DD hh:mm a"
-     toString={date => (date ? date.format().substring(0,16) : '')}
+     toString={date => (date ? date.format().substring(0,16) : undefined)}
      {...props}
   />
 );
@@ -43,7 +43,9 @@ TimeRangeInput.propTypes = {
 export default TimeRangeInput;
 
 QueryComponentManager.registerComponent((definition) => {
-  if (["TimeRange"].includes(definition?.type?.name)) {
+  if (["TimeRange"].includes(definition?.type?.name)
+    && definition.type.fields?.length === 2
+  ) {
     return [TimeRangeInput, 50];
   }
 });

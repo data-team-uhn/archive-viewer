@@ -25,6 +25,12 @@
   }],
   "optionalFields" : [{
     "name": "created",
-    "type": {"name" : "DateRange"}
+    "type": {
+      "name" : "DateRange",
+      "fields": [
+        {"name" : "createdAfter"},
+        {"name" : "createdBefore"}
+      ]
+    }
   }]
 }

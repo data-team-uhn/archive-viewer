@@ -30,7 +30,7 @@ let DateRangeInput = (props) => (
   <DateTimeRangeInput
      pickerComponent={DatePicker}
      dateFormat="YYYY-MM-DD"
-     toString={date => (date ? date.format().substring(0,10) : '')}
+     toString={date => (date ? date.format().substring(0,10) : undefined)}
      {...props}
   />
 );
@@ -43,7 +43,9 @@ DateRangeInput.propTypes = {
 export default DateRangeInput;
 
 QueryComponentManager.registerComponent((definition) => {
-  if (["DateRange"].includes(definition?.type?.name)) {
+  if (["DateRange"].includes(definition?.type?.name)
+    && definition.type.fields?.length === 2
+  ) {
     return [DateRangeInput, 50];
   }
 });
