@@ -19,8 +19,6 @@
 
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 
 // Internal, generic Date/Time input field
@@ -50,15 +48,13 @@ let DateTimeInput = (props) => {
   const PickerComponent = pickerComponent;
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <PickerComponent
-        value={date}
-        format={format}
-        onChange={handleChange}
-        disableFuture
-        {...rest}
-      />
-    </LocalizationProvider>
+    <PickerComponent
+      value={date}
+      format={format}
+      onChange={handleChange}
+      disableFuture
+      {...rest}
+    />
   );
 }
 

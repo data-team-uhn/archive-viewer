@@ -2,6 +2,8 @@ import React from 'react';
 import * as ReactDOMClient from 'react-dom/client';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 import ArchiveApp from './components/ArchiveApp';
 import { appTheme } from "./appTheme";
@@ -17,7 +19,9 @@ root.render(
   <StyledEngineProvider injectFirst>
     <ThemeProvider theme={appTheme}>
       <CssBaseline />
-      <ArchiveApp />
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <ArchiveApp />
+      </LocalizationProvider>
     </ThemeProvider>
   </StyledEngineProvider>
 );

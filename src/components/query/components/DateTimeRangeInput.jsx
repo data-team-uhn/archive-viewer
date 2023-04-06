@@ -23,8 +23,6 @@ import PropTypes from 'prop-types';
 import {
   Grid,
 } from "@mui/material";
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs';
 
 // Internal, generic Date/Time range input field
@@ -66,8 +64,8 @@ let DateTimeRangeInput = (props) => {
 
   // Wrap the Grid container a div to make sure the Grid layout is not messed up
   // when rendered as a child of a Stack
-  return (<div>
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+  return (
+    <div>
       <Grid container alignItems="center" direction="row" spacing={1} rowSpacing={2} wrap="wrap">
         <Grid item xs={true}>
           <PickerComponent
@@ -91,8 +89,8 @@ let DateTimeRangeInput = (props) => {
           />
         </Grid>
       </Grid>
-    </LocalizationProvider>
-  </div>)
+    </div>
+  )
 }
 
 DateTimeRangeInput.propTypes = {
