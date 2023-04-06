@@ -56,7 +56,7 @@ let QueryFieldset =  (props) => {
       : `Minimum ${fieldset.min} of:`
   ));
 
-  return (children?.length > 0 || fieldset?.fields?.length > 0 ?
+  return (children || fieldset?.fields?.length > 0 ?
     <Stack direction={direction} spacing={spacing} sx={{width: "100%"}}>
       { label && <Typography variant="subtitle2">{ label }</Typography> }
       { children }
@@ -77,6 +77,30 @@ QueryFieldset.propTypes = {
 QueryFieldset.defaultProps = {
   direction: "column",
   spacing: 2,
+};
+
+//----------------------------------------------------------------------
+// QueryOptionalFields fills in the label prop of QueryFieldset for use
+// in the optional section
+let QueryOptionalFields = (props) => {
+  const { withBlankLabel, fields, children, ...queryFieldsetProps} = props;
+
+  return (
+    <QueryFieldset {...queryFieldsetProps}
+      fieldset={{
+        label: withBlankLabel ? `\u00A0` : "Refine your search:",
+        fields: fields
+      }}
+    >
+      { children }
+    </QueryFieldset>
+  );
+}
+
+QueryOptionalFields.propTypes = {
+  withBlankLabel: PropTypes.bool,
+  fields: PropTypes.arrayOf(PropTypes.object),
+  children: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node)]),
 };
 
 // ----------------------------------------------------------------------
@@ -247,4 +271,4 @@ QueryFormContainer.propTypes = {
 
 // -------------------------------------------------------------------------
 
-export { QueryFieldset, QuerySection, QueryFormContainer, QuerySummary };
+export { QueryFieldset, QueryOptionalFields, QuerySection, QueryFormContainer, QuerySummary };
