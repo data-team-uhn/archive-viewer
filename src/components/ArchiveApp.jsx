@@ -20,15 +20,25 @@
 import React, { useState, useEffect } from "react";
 
 import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link as RouterLink,
+  Navigate,
+} from 'react-router-dom';
+
+import {
   AppBar,
+  Link,
   Paper,
   Toolbar,
+  Tooltip,
 } from "@mui/material";
 
 import Logo from "./media/Logo";
 import UserMenu from "./user/UserMenu";
 import ArchiveViewer from "./ArchiveViewer";
-import InfoDisplay from "./utils/InfoDisplay";
+import InfoPage from "./InfoPage";
 
 import AppConfig from "../config/appConfig.json";
 
@@ -36,19 +46,6 @@ let ArchiveApp = (props) => {
   // Todo:
   // - authentication logic
   // - user menu in the top app bar
-
-  // A map fileName -> fileContents holding the documents configured in AppConfig.footerLinks
-  // to be displayed when the user clicks a footer link 
-  const [docs, setDocs] = useState({});
-
-  // Lazy loads the document contents on click
-  let loadDoc = (docName) => {
-    if (!docs[docName]) {
-      import(`../docs/${docName}`)
-        .then(module => setDocs(old => ({...old, [docName] : module.default})))
-        .catch(err => console.log(err));
-    }
-  }
 
   useEffect(() => {
     document.title = AppConfig.appName;
@@ -60,31 +57,41 @@ let ArchiveApp = (props) => {
   // 3. Bottom appbar with information links
   return (
     <Paper elevation={0} sx={{px: 4, py: 8, minHeight: "100vh"}}>
-      <AppBar>
-        <Toolbar sx={{justifyContent: "space-between"}}>
-          <Logo width="64px" full />
-          <UserMenu />
-        </Toolbar>
-      </AppBar>
-      <ArchiveViewer />
-      <AppBar sx={{ top: 'auto', bottom: 0 }}>
-        <Toolbar variant="dense">
-          { AppConfig?.footerLinks?.map(footerLinkConfig => (
-            <InfoDisplay
-              key={footerLinkConfig.source}
-              variant="text"
-              size="small"
-              color="primary"
-              label={footerLinkConfig.label}
-              title={footerLinkConfig.title}
-              dynamic
-              onClick={event => loadDoc(footerLinkConfig.source)}
-            >
-              { docs[footerLinkConfig.source] }
-            </InfoDisplay>
-          ))}
-        </Toolbar>
-      </AppBar>
+      <Router>
+        <AppBar>
+          <Toolbar sx={{justifyContent: "space-between"}}>
+            <Link component={RouterLink} underline="none" to="/Home" color="inherit">
+              <Logo width="64px" full />
+            </Link>
+            <UserMenu />
+          </Toolbar>
+        </AppBar>
+        <Routes>
+          <Route path="/" element={<ArchiveViewer />} />
+          { AppConfig?.footerLinks?.filter(l => l.source).map(l =>
+              <Route key={l.label} path={`/${l.label}`} element={<InfoPage {...l} />} />
+            ) }
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+        <AppBar sx={{ top: 'auto', bottom: 0 }}>
+          <Toolbar variant="dense">
+            { AppConfig?.footerLinks?.map(l =>
+              <Tooltip title={l.title || l.label} key={l.label}>
+                <Link
+                  component={RouterLink}
+                  variant="button"
+                  size="small"
+                  underline="none"
+                  to={`/${l.label}`}
+                >
+                  {l.label}
+                </Link>
+              </Tooltip>
+              )
+            }
+          </Toolbar>
+        </AppBar>
+      </Router>
     </Paper>
   );
 };

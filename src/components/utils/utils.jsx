@@ -18,6 +18,22 @@
 //
 
 // -------------------------------------------------------------------------
+// Load a resource file
+const loadResource = (filename, callback) => {
+  import(`../../resources/${filename}`)
+    .then(module => {
+      if (typeof(module.default) == "string" && module.default.startsWith("/")) {
+        fetch(module.default)
+          .then(response => response.text()).then(callback)
+          .catch(err => callback(module.default))
+      } else {
+        callback(module.default);
+      }
+    })
+    .catch(err => console.log(err));
+}
+
+// -------------------------------------------------------------------------
 // Label formatting from field name
 const camelCaseToWords = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1).replace( /([A-Z])/g, " $1" ).toLowerCase();
@@ -79,6 +95,7 @@ const GRAPHQL_QUERY_ARGUMENT = {name: 'query'};
 // ---------------------------------------------------------------------------
 // All exports:
 export {
+  loadResource,
   camelCaseToWords,
   serializeGraphQLQuery,
   GRAPHQL_INTROSPECTION_QUERY,

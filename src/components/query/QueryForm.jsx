@@ -28,7 +28,7 @@ import {
 } from "@mui/material";
 
 import InfoDisplay from "../utils/InfoDisplay";
-import { camelCaseToWords } from "../utils/utils";
+import { loadResource, camelCaseToWords } from "../utils/utils";
 
 // Layout helpers
 import {
@@ -43,8 +43,6 @@ import QueryComponentManager from "./QueryComponentManager";
 // Register all the available query field components to the manager
 import "./QueryComponents";
 
-import queryIntro from "../../docs/query.md";
-
 export default function QueryForm (props) {
   const { requiredFields, optionalFields,
     requireDataSource, dataSources, dataSource, onDataSourceChange,
@@ -52,10 +50,13 @@ export default function QueryForm (props) {
     onSubmit, submitDisabled, lastSearchQuery, onReset, resetDisabled
   } = props;
 
+  const [ queryIntro, setQueryIntro ] = useState();
   const [ defaultFields, setDefaultFields ] = useState();
   const [ satisfiedRequiredGroup, setSatisfiedRequiredGroup ] = useState();
   const [ dataSourceFields, setDataSourceFields ] = useState();
   const [ disableFieldsetLabels, setDisableFieldsetLabels ] = useState();
+
+  useEffect(() => {loadResource('query.md', setQueryIntro)}, []);
 
   // Get all default fields in one list
   useEffect(() => {

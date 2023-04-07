@@ -3,12 +3,14 @@
   "logoColor" : "#106DB5",
   "exportFileNamePrefix" : "archive_viewer_",
   "footerLinks" : [{
+    "label": "Home"
+  }, {
     "label": "About",
     "title" : "About the Archive Viewer",
     "source": "about.md"
   }, {
     "label": "FAQ",
     "title" : "Frequently Asked Questions",
-    "source": "faq.md"
+    "source": "faq.json"
   }]
 }

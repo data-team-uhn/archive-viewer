@@ -127,6 +127,32 @@ const appTheme = createTheme({
         },
       },
     },
+    MuiTypography: {
+      styleOverrides: {
+        button: {
+          textTransform: "none",
+          padding: "4px 12px",
+          borderRadius: "2px",
+          "&:hover": {
+            background: lighten(primaryColor, .9),
+          },
+        }
+      }
+    },
+    MuiAccordion: {
+      defaultProps: {
+        elevation: 0,
+      },
+      styleOverrides: {
+        root: {
+          paddingTop: "12px",
+          "&.Mui-expanded": {
+            paddingTop: 0,
+            background: lighten(primaryColor, .95),
+          },
+        },
+      },
+    },
   },
 });
 

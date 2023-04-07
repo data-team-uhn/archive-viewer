@@ -48,12 +48,15 @@ import ViewIcon from '@mui/icons-material/FindInPage';
 import FormattedText from "../utils/FormattedText";
 import RecordViewer from "./RecordViewer";
 import SectionDivider from "../utils/SectionDivider";
-import { serializeGraphQLQuery, GRAPHQL_QUERY_ARGUMENT, camelCaseToWords } from "../utils/utils";
+import {
+  loadResource,
+  serializeGraphQLQuery,
+  GRAPHQL_QUERY_ARGUMENT,
+  camelCaseToWords
+} from "../utils/utils";
 
 import QueryConfig from "../../config/queryConfig.json";
 import AppConfig from "../../config/appConfig.json";
-
-import resultsIntro from "../../docs/results.md";
 
 const GridToolbarExport = ({ csvOptions, printOptions, ...other }) => (
   <GridToolbarExportContainer {...other}>
@@ -87,12 +90,16 @@ const GRAPHQL_TO_DATAGRID_TYPE = {
 export default function Results (props) {
   const { queryDefinition, query, onClear } = props;
 
+  const [ resultsIntro, setResultsIntro ] = useState();
   const [ rows, setRows ] = useState();
   const [ columns, setColumns ] = useState();
   const [ crtRecordId, setCrtRecordId ] = useState();
   const [ crtField, setCrtField ] = useState();
 
   const QUERY_FIELD = GRAPHQL_QUERY_ARGUMENT.name;
+
+  // Load the intro
+  useEffect(() => {loadResource('results.md', setResultsIntro)}, []);
 
   // When we know the query definition, build the column definitions
   useEffect(() => {
