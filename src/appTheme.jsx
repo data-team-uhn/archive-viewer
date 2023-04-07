@@ -112,9 +112,6 @@ const appTheme = createTheme({
       },
     },
     MuiCardHeader: {
-      defaultProps: {
-        disableTypography: true,
-      },
       styleOverrides: {
         root: {
           paddingBottom: 0,

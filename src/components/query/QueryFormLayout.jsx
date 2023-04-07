@@ -1,4 +1,4 @@
-//0
+//
 //  Licensed to the Apache Software Foundation (ASF) under one
 //  or more contributor license agreements.  See the NOTICE file
 //  distributed with this work for additional information
@@ -132,7 +132,7 @@ let QuerySection = (props) => {
   return (
     <Card {...(outlined ? {variant: "outlined"} : {})}>
       { title &&
-        <CardHeader title={
+        <CardHeader disableTypography title={
           <Divider light>
             <Chip label={title} color={color}/>
           </Divider>
@@ -208,7 +208,7 @@ let QueryFormContainer = (props) => {
     <form onSubmit={onSubmit}>
       <Card>
         <Collapse in={expanded}>
-          { intro && <CardHeader title={<FormattedText variant="body2">{ intro }</FormattedText>} /> }
+          { intro && <CardHeader disableTypography title={<FormattedText variant="body2">{ intro }</FormattedText>} /> }
           <Grid container direction="row" spacing={2}>
             { children.filter(c=>c).map((c, i) =>
               <Grid item xs={12} {...(childrenSizes?.[i] ?? {md: 6})} key={i}>{ c }</Grid>
@@ -237,7 +237,7 @@ let QueryFormContainer = (props) => {
               Search
             </Button>
           </CardActions>
-          { query && <CardHeader title={<SectionDivider title="Your last search" />} /> }
+          { query && <CardHeader disableTypography title={<SectionDivider title="Your last search" />} /> }
         </Collapse>
         { query && <>
           <Collapse in={!expanded}>
@@ -247,7 +247,7 @@ let QueryFormContainer = (props) => {
               </Button>
             </CardActions>
           </Collapse>
-          { !expanded && <CardHeader title={<Divider />} />}
+          { !expanded && <CardHeader disableTypography title={<Divider />} />}
           <CardContent>
             <QuerySummary query={query} requiredFields={requiredFields} />
           </CardContent>

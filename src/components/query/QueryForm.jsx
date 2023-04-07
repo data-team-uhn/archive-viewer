@@ -55,7 +55,6 @@ export default function QueryForm (props) {
   const [ defaultFields, setDefaultFields ] = useState();
   const [ satisfiedRequiredGroup, setSatisfiedRequiredGroup ] = useState();
   const [ dataSourceFields, setDataSourceFields ] = useState();
-  const [ disableSectionTitles, setDisableSectionTitles ] = useState();
   const [ disableFieldsetLabels, setDisableFieldsetLabels ] = useState();
 
   // Get all default fields in one list
@@ -89,7 +88,7 @@ export default function QueryForm (props) {
         )
       )
     });
-  }, [defaultFields, dataSource]);
+  }, [defaultFields, dataSource, defaultQueryArg.name]);
 
   const displayQueryField = (f, excludeDefaultFields) => {
     if (!f) return null;

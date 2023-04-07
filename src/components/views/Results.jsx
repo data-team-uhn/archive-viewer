@@ -197,7 +197,7 @@ export default function Results (props) {
                 setCrtRecordId(params.id);
               }}
               onCellClick={(params, event) => {
-                if (params.field != '__check__') {
+                if (params.field !== '__check__') {
                   event.preventDefault();
                   setCrtRecordId(params.id);
                   setCrtField(params.field);

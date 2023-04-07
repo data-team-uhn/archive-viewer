@@ -26,7 +26,11 @@ let FormattedText = (props) => {
   let { children, ...typographyProps } = props;
 
   return (
-    <Typography component="div" {...typographyProps} >
+    <Typography
+      component="div"
+      {...typographyProps}
+      sx={{"& > p:only-child" : {my: 0}}}
+    >
       <ReactMarkdown>{ children }</ReactMarkdown>
     </Typography>
   );

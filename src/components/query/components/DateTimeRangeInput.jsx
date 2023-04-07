@@ -68,7 +68,7 @@ let DateTimeRangeInput = (props) => {
       <Grid container alignItems="center" direction="row" spacing={1} rowSpacing={2} wrap="wrap">
         <Grid item xs={true}>
           <PickerComponent
-            label={camelCaseToWords(fields[0].name)}
+            label={camelCaseToWords(fields[0].name) || label}
             value={start}
             onChange={(value) => handleChange(value, setStart, (v) => ([v, end]))}
             maxDate={end}
@@ -78,7 +78,7 @@ let DateTimeRangeInput = (props) => {
         <Grid item>—</Grid>
         <Grid item xs={true}>
           <PickerComponent
-            label={camelCaseToWords(fields[1].name)}
+            label={camelCaseToWords(fields[1].name) || label}
             value={end}
             onChange={(value) => handleChange(value, setEnd, (v) => ([start, v]))}
             minDate={start}
