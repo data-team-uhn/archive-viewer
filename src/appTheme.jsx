@@ -93,11 +93,6 @@ const appTheme = createTheme({
       defaultProps: {
         size: "small",
       },
-      styleOverrides: {
-        root: {
-          whiteSpace: "noWrap",
-        },
-      },
     },
     MuiDialogTitle: {
       styleOverrides: {

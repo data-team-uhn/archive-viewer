@@ -38,7 +38,7 @@ import {
 import Logo from "./media/Logo";
 import UserMenu from "./user/UserMenu";
 import ArchiveViewer from "./ArchiveViewer";
-import InfoPage from "./InfoPage";
+import InfoPage from "./pages/InfoPage";
 
 import AppConfig from "../config/appConfig.json";
 
