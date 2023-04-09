@@ -1,5 +1,6 @@
 {
   "appName" : "Archive Viewer",
+  "pathBase": "/archive-viewer/",
   "logoColor" : "#106DB5",
   "exportFileNamePrefix" : "archive_viewer_",
   "footerLinks" : [{

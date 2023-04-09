@@ -67,11 +67,11 @@ let ArchiveApp = (props) => {
           </Toolbar>
         </AppBar>
         <Routes>
-          <Route path="/" element={<ArchiveViewer />} />
+          <Route path={AppConfig.pathBase} element={<ArchiveViewer />} />
           { AppConfig?.footerLinks?.filter(l => l.source).map(l =>
-              <Route key={l.label} path={`/${l.label}`} element={<InfoPage {...l} />} />
+              <Route key={l.label} path={`${AppConfig.pathBase}${l.label}`} element={<InfoPage {...l} />} />
             ) }
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to={AppConfig.pathBase} replace />} />
         </Routes>
         <AppBar sx={{ top: 'auto', bottom: 0 }}>
           <Toolbar variant="dense">
@@ -82,7 +82,7 @@ let ArchiveApp = (props) => {
                   variant="button"
                   size="small"
                   underline="none"
-                  to={`/${l.label}`}
+                  to={`${AppConfig.pathBase}${l.label}`}
                 >
                   {l.label}
                 </Link>
