@@ -17,28 +17,44 @@
 //  under the License.
 //
 import { createTheme } from '@mui/material/styles';
-import { lighten, darken } from '@mui/material';
 
-const mode = "light";
-const primaryColor = mode === "light" ? "#106DB5" : "#0bf";
-const secondaryColor = "#c6934b";
-const bgColor = mode === "light" ? "#fff" : "#121212";
-const fade = mode === "light" ? lighten : darken;
+function addAlpha(color, opacity) {
+  var _opacity = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
+  return color + _opacity.toString(16).toUpperCase();
+}
+
+const lightPalette = {
+  mode: "light",
+  primary: {
+    main: "#106DB5",
+  },
+  secondary: {
+    main: "#c6934b",
+  },
+  background: {
+    default: "#ffffff",
+    paper: "#ffffff",
+  },
+};
+
+const darkPalette = {
+  mode: "dark",
+  primary: {
+    main: "#00bbff",
+  },
+  secondary: {
+    main: "#c6934b",
+  },
+  background: {
+    default: "#121212",
+    paper: "#121212",
+  },
+};
+
+const palette = lightPalette;
 
 const appTheme = createTheme({
-  palette: {
-    mode: mode,
-    primary: {
-      main: primaryColor,
-    },
-    secondary: {
-      main: secondaryColor,
-    },
-    background: {
-      default: bgColor,
-      paper: bgColor,
-    },
-  },
+  palette: palette,
   components: {
     MuiPaper: {
       defaultProps: {
@@ -65,7 +81,7 @@ const appTheme = createTheme({
     MuiAvatar: {
       styleOverrides: {
         root: {
-          backgroundColor: primaryColor,
+          backgroundColor: palette.primary.main,
         },
       },
     },
@@ -75,8 +91,8 @@ const appTheme = createTheme({
           margin: "4px",
         },
         filledPrimary: {
-          color: primaryColor,
-          backgroundColor: fade(primaryColor, .8),
+          color: palette.primary.main,
+          backgroundColor: addAlpha(palette.primary.main, .25),
           fontWeight: "500",
         },
       },
@@ -88,9 +104,12 @@ const appTheme = createTheme({
     },
     MuiInputBase: {
       styleOverrides: {
+        root: {
+          backgroundColor: addAlpha(palette.background.paper, .7),
+        },
         colorInfo: {
           fontWeight: "bold",
-          backgroundColor: fade(primaryColor, .95),
+          backgroundColor: addAlpha(palette.primary.main, .1),
         },
       },
     },
@@ -134,7 +153,7 @@ const appTheme = createTheme({
           padding: "4px 12px",
           borderRadius: "2px",
           "&:hover": {
-            background: lighten(primaryColor, .9),
+            background: addAlpha(palette.primary.main, .1),
           },
         }
       }
@@ -148,7 +167,7 @@ const appTheme = createTheme({
           paddingTop: "12px",
           "&.Mui-expanded": {
             paddingTop: 0,
-            background: lighten(primaryColor, .95),
+            background: addAlpha(palette.primary.main, .1),
           },
         },
       },
@@ -156,4 +175,4 @@ const appTheme = createTheme({
   },
 });
 
-export { appTheme };
+export { appTheme, addAlpha };
