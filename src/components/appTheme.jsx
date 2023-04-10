@@ -51,9 +51,8 @@ const darkPalette = {
   },
 };
 
-const palette = lightPalette;
 
-const appTheme = createTheme({
+const getAppTheme = (prefersDarkMode) => ((palette => ({
   palette: palette,
   components: {
     MuiPaper: {
@@ -173,6 +172,6 @@ const appTheme = createTheme({
       },
     },
   },
-});
+}))(prefersDarkMode ? darkPalette : lightPalette));
 
-export { appTheme, addAlpha };
+export { getAppTheme, addAlpha };

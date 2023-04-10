@@ -17,7 +17,17 @@
 //  under the License.
 //
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
+
+import useMediaQuery from '@mui/material/useMediaQuery';
+import {
+  createTheme,
+  ThemeProvider,
+  StyledEngineProvider
+} from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 import {
   BrowserRouter as Router,
@@ -40,12 +50,17 @@ import UserMenu from "./user/UserMenu";
 import ArchiveViewer from "./ArchiveViewer";
 import InfoPage from "./pages/InfoPage";
 
+import { getAppTheme } from "./appTheme";
+
 import AppConfig from "../config/appConfig.json";
 
 let ArchiveApp = (props) => {
   // Todo:
   // - authentication logic
   // - user menu in the top app bar
+
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const appTheme = useMemo(() => createTheme(getAppTheme(prefersDarkMode)), [prefersDarkMode]);
 
   useEffect(() => {
     document.title = AppConfig.appName;
@@ -104,20 +119,27 @@ let ArchiveApp = (props) => {
   );
 
   return (
-    <Paper sx={{px: 4, py: 2, minHeight: "100vh"}}>
-      <Router>
-        <Routes>
-          <Route path={AppConfig.pathBase} element={appWrapper(<ArchiveViewer />)} />
-          { AppConfig?.footerLinks?.filter(l => l.source).map(l =>
-              <Route key={l.label} path={`${AppConfig.pathBase}${l.label}`} element={
-                appWrapper(<InfoPage {...l} />)
-              } />
-            ) }
-          <Route path={`${AppConfig.pathBase}embedded`} element={embeddedWrapper(<ArchiveViewer />)} />
-          <Route path={`${AppConfig.pathBase}*`} element={<Navigate to={AppConfig.pathBase} replace />} />
-        </Routes>
-      </Router>
-    </Paper>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={appTheme}>
+        <CssBaseline />
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <Paper sx={{px: 4, py: 2, minHeight: "100vh"}}>
+            <Router>
+              <Routes>
+                <Route path={AppConfig.pathBase} element={appWrapper(<ArchiveViewer />)} />
+                  { AppConfig?.footerLinks?.filter(l => l.source).map(l =>
+                    <Route key={l.label} path={`${AppConfig.pathBase}${l.label}`} element={
+                      appWrapper(<InfoPage {...l} />)
+                    } />
+                  ) }
+                <Route path={`${AppConfig.pathBase}embedded`} element={embeddedWrapper(<ArchiveViewer />)} />
+                <Route path={`${AppConfig.pathBase}*`} element={<Navigate to={AppConfig.pathBase} replace />} />
+              </Routes>
+            </Router>
+          </Paper>
+        </LocalizationProvider>
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 };
 
