@@ -222,7 +222,7 @@ export default function QueryForm (props) {
   //    * the search has been just launched, and the results currently reflect the query
   return (
     <QueryFormContainer
-      intro={queryIntro}
+      intro={satisfiedRequiredGroup ? '' : queryIntro}
       onSubmit={onSubmit}
       submitDisabled={submitDisabled}
       onReset={onReset}

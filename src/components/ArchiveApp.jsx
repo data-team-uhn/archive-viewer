@@ -17,7 +17,7 @@
 //  under the License.
 //
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 
 import {
   BrowserRouter as Router,
@@ -51,31 +51,40 @@ let ArchiveApp = (props) => {
     document.title = AppConfig.appName;
   }, []);
 
+  let embeddedWrapper = (content) => (
+    <>
+      <Paper sx={{
+         width: "fit-content",
+         height: 0,
+         overflow: "visible",
+         margin: "auto",
+         opacity: .1,
+         zoom: 3
+      }}>
+        <Logo width="64" full/>
+      </Paper>
+      { content }
+    </>
+  );
+
   // Renders the following:
   // 1. Top appbar with logo, appname, user menu placeholder (user menu not yet implemented)
   // 2. ArchiveViewer component (query form and results)
   // 3. Bottom appbar with information links
-  return (
-    <Paper elevation={0} sx={{px: 4, py: 8, minHeight: "100vh"}}>
-      <Router>
-        <AppBar>
-          <Toolbar sx={{justifyContent: "space-between"}}>
-            <Link component={RouterLink} underline="none" to="/Home" color="inherit">
-              <Logo width="64px" full />
-            </Link>
-            <UserMenu />
-          </Toolbar>
-        </AppBar>
-        <Routes>
-          <Route path={AppConfig.pathBase} element={<ArchiveViewer />} />
-          { AppConfig?.footerLinks?.filter(l => l.source).map(l =>
-              <Route key={l.label} path={`${AppConfig.pathBase}${l.label}`} element={<InfoPage {...l} />} />
-            ) }
-          <Route path="*" element={<Navigate to={AppConfig.pathBase} replace />} />
-        </Routes>
-        <AppBar sx={{ top: 'auto', bottom: 0 }}>
-          <Toolbar variant="dense">
-            { AppConfig?.footerLinks?.map(l =>
+  let appWrapper = (content) => (
+    <Paper sx={{py: 6}}>
+      <AppBar>
+        <Toolbar sx={{justifyContent: "space-between"}}>
+          <Link component={RouterLink} underline="none" to="/Home" color="inherit">
+            <Logo width="64px" full />
+          </Link>
+          <UserMenu />
+        </Toolbar>
+      </AppBar>
+      { content }
+      <AppBar sx={{ top: 'auto', bottom: 0 }}>
+        <Toolbar variant="dense">
+          { AppConfig?.footerLinks?.map(l =>
               <Tooltip title={l.title || l.label} key={l.label}>
                 <Link
                   component={RouterLink}
@@ -87,10 +96,26 @@ let ArchiveApp = (props) => {
                   {l.label}
                 </Link>
               </Tooltip>
-              )
-            }
-          </Toolbar>
-        </AppBar>
+            )
+          }
+        </Toolbar>
+      </AppBar>
+    </Paper>
+  );
+
+  return (
+    <Paper sx={{px: 4, py: 2, minHeight: "100vh"}}>
+      <Router>
+        <Routes>
+          <Route path={AppConfig.pathBase} element={appWrapper(<ArchiveViewer />)} />
+          { AppConfig?.footerLinks?.filter(l => l.source).map(l =>
+              <Route key={l.label} path={`${AppConfig.pathBase}${l.label}`} element={
+                appWrapper(<InfoPage {...l} />)
+              } />
+            ) }
+          <Route path={`${AppConfig.pathBase}embedded`} element={embeddedWrapper(<ArchiveViewer />)} />
+          <Route path={`${AppConfig.pathBase}*`} element={<Navigate to={AppConfig.pathBase} replace />} />
+        </Routes>
       </Router>
     </Paper>
   );

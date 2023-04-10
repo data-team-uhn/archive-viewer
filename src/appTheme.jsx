@@ -40,6 +40,11 @@ const appTheme = createTheme({
     },
   },
   components: {
+    MuiPaper: {
+      defaultProps: {
+        elevation: 0,
+      },
+    },
     MuiAppBar: {
       defaultProps: {
         color: "default",
