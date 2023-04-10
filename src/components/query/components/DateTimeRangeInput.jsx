@@ -31,7 +31,7 @@ import { camelCaseToWords } from "../../utils/utils";
 // Customized by the DateRangeInput and TimeRangeInput components
 // to be called via the QueryComponentManager in the QueryForm
 let DateTimeRangeInput = (props) => {
-  let { pickerComponent, dateFormat, toString, label, onChange, fields } = props;
+  let { pickerComponent, dateFormat, toString, label, value, onChange, fields } = props;
 
   const [ start, setStart ] = useState(null);
   const [ end, setEnd ] = useState(null);
@@ -44,8 +44,13 @@ let DateTimeRangeInput = (props) => {
     loadValue(fields?.[1]?.value, setEnd);
   }, [fields]);
 
+  useEffect(() => {
+    loadValue(value?.[0], setStart);
+    loadValue(value?.[1], setEnd);
+  }, [value]);
+
   const loadValue = (value, setter) => {
-    value && dayjs(value).isValid() && setter(dayjs(value));
+    value && dayjs(value).isValid() ? setter(dayjs(value)) : setter(null);
   }
 
   // Propagate any date change to the parent component

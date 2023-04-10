@@ -91,6 +91,18 @@ export default function QueryForm (props) {
     });
   }, [defaultFields, dataSource, defaultQueryArg.name]);
 
+  const getFieldValueFromQuery = (f) => {
+    if (f?.type?.fields) {
+      let val = [];
+      f.type.fields.forEach(subField => {
+        val.push(query?.[defaultQueryArg.name]?.[subField?.name] || '');
+      });
+      return val;
+    } else {
+      return query?.[defaultQueryArg.name]?.[f?.name] || '';
+    }
+  }
+
   const displayQueryField = (f, excludeDefaultFields) => {
     if (!f) return null;
     const matchingDefaultField = defaultFields?.find(df => df.name === f.name);
@@ -110,7 +122,7 @@ export default function QueryForm (props) {
         key={f.name}
         autoFocus={f.autoFocus}
         label={f.label || camelCaseToWords(f?.name)}
-        value={matchingDefaultField?.value || query?.[defaultQueryArg.name]?.[f?.name] || ''}
+        value={getFieldValueFromQuery(f)}
         disabled={disabled}
         color={disabled ? "info" : undefined}
         onChange={value => {
