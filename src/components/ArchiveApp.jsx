@@ -90,7 +90,7 @@ let ArchiveApp = (props) => {
     <Paper sx={{py: 6}}>
       <AppBar>
         <Toolbar sx={{justifyContent: "space-between"}}>
-          <Link component={RouterLink} underline="none" to="/Home" color="inherit">
+          <Link component={RouterLink} underline="none" to={`${AppConfig.pathBase}Home`} color="inherit">
             <Logo width="64px" full />
           </Link>
           <UserMenu />
