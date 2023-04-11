@@ -16,7 +16,7 @@
 //  specific language governing permissions and limitations
 //  under the License.
 //
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import PropTypes from "prop-types";
 
 import {
@@ -24,12 +24,20 @@ import {
   Paper,
 } from "@mui/material";
 
+import {
+  createTheme,
+  ThemeProvider,
+} from '@mui/material/styles';
+
 import ReactToPrint from 'react-to-print';
+
+import { getAppTheme } from "../appTheme";
 
 function PrintButton(props) {
   const { title, content, trigger, buttonProps, ...rest } = props;
 
   const ref = useRef(null);
+  const printTheme = useMemo(() => createTheme(getAppTheme()), []);
 
   return(
     <>
@@ -37,32 +45,31 @@ function PrintButton(props) {
         trigger={() => trigger || <Button {...buttonProps}>Print</Button>}
         content={() => ref.current}
       />
-      <Paper
-        ref={ref}
-        sx={{
+      <ThemeProvider theme={printTheme}>
+        <Paper ref={ref} sx={{
           display: "none",
           "@media print" : {
-             display: "block",
-             p: 4,
-             "& table" : {
-               width: "100%",
-             },
-             "& th" : {
-               py: 2,
-               opacity: .3,
-               textAlign: "center",
-             },
-             "& ul:not(:first-of-type)" : {
-               breakBefore: "page",
-             },
+            display: "block",
+            p: 4,
+            "& table" : {
+              width: "100%",
+            },
+            "& th" : {
+              py: 2,
+              opacity: .3,
+              textAlign: "center",
+            },
+            "& ul:not(:first-of-type)" : {
+              breakBefore: "page",
+            },
           }
-        }}
-      >
-        <table>
-          <thead><tr><th>{ title }<hr/></th></tr></thead>
-          <tbody><tr><td>{ content }</td></tr></tbody>
-        </table>
-      </Paper>
+        }}>
+          <table>
+            <thead><tr><th>{ title }<hr/></th></tr></thead>
+            <tbody><tr><td>{ content }</td></tr></tbody>
+          </table>
+        </Paper>
+      </ThemeProvider>
     </>
   )
 };
