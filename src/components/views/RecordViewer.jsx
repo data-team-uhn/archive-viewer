@@ -52,11 +52,15 @@ function RecordViewer(props) {
 
   const renderRecord = (recordData) => (
     <List disablePadding dense key={recordData.id}>
-      <ListSubheader color="primary" sx={{borderBottom: "1px solid", fontSize: "1em"}}>
-        {dataSource} {recordData.id}
+      <ListSubheader color="primary" sx={{borderBottom: "1px solid"}}>
+        <ListItemText
+          primary={`${dataSource || ''} ${recordData.id || ''}`}
+          secondary={`Created at: ${recordData.createdAt}`}
+          primaryTypographyProps={{variant: "body1", sx: {fontWeight: "bold"}}}
+        />
       </ListSubheader>
       { fieldsDefinition
-          .filter(f => f.type !== 'actions' && recordData?.[f.field])
+          .filter(f => !['id', 'actions', 'createdAt'].includes(f.field) && recordData?.[f.field])
           .map((f, index) =>
             <ListItem key={f.field} selected={f.field === highlightedField}>
               <ListItemText

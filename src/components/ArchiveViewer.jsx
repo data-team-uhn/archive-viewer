@@ -63,8 +63,8 @@ export default function ArchiveViewer (props) {
       // Add a human-readable label
       q.label = camelCaseToWords(q.name);
       // For each argument, swap the 'type' reference for the inputFields specified by that type
-      q.args.forEach(arg => {
-        arg.inputFields = allTypes.find(type => type.name === arg.type.name).inputFields;
+      q.args?.filter(arg => arg).forEach(arg => {
+        arg.inputFields = allTypes.find(type => type.name === arg.type.name)?.inputFields;
       });
       // Expand the return type definitions
       expandType(q.type, allTypes);
