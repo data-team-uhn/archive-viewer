@@ -51,7 +51,8 @@ let QueryFieldset =  (props) => {
   const { fieldset, displayField, disableLabel, direction, spacing, children } = props;
 
   const label = !disableLabel && (fieldset.label ?? (
-    !(fieldset?.min) ? '' :
+    !(fieldset?.min && fieldset.min <= fieldset?.fields?.length) ? '' :
+      fieldset.min === fieldset.fields.length ? "All of:" :
       fieldset.min === 1 ? "One of:"
       : `Minimum ${fieldset.min} of:`
   ));
