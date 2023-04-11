@@ -20,14 +20,19 @@ import React from 'react';
 import PropTypes from "prop-types";
 
 import {
+  Button,
+  DialogActions,
   DialogContent,
   List,
   ListItem,
   ListItemText,
+  ListSubheader,
+  Stack,
   Typography,
 } from "@mui/material";
 
 import ResponsiveDialog from "../utils/ResponsiveDialog";
+import PrintButton from "../utils/PrintButton";
 
 import QueryConfig from "../../config/queryConfig.json";
 
@@ -35,52 +40,69 @@ import QueryConfig from "../../config/queryConfig.json";
  * A component that renders a dialog with the data associated with a specific record
  */
 function RecordViewer(props) {
-  const { dataSource, id, data, fieldsDefinition, highlightedField, query, open, onClose } = props;
+  const { dataSource, data, fieldsDefinition, highlightedField, query, open, onClose } = props;
 
   const requiredFields = QueryConfig.requiredFields.map(group => group.fields).flat();
 
-  const title = <>
-   { dataSource } { id }
-   { requiredFields?.length && 
-     <Typography color="textSecondary" variant="body2">
-       { requiredFields.filter(f => query[f.name])
-           .map(f => `${f.label || f.name} : ${query[f.name]}`).join(", ")
-       }
-     </Typography>
-   }
-  </>;
+  const title = (
+    requiredFields.filter(f => query[f.name])
+      .map(f => `${f.label || f.name} : ${query[f.name]}`)
+      .join(", ")
+  );
+
+  const renderRecord = (recordData) => (
+    <List disablePadding dense key={recordData.id}>
+      <ListSubheader color="primary" sx={{borderBottom: "1px solid", fontSize: "1em"}}>
+        {dataSource} {recordData.id}
+      </ListSubheader>
+      { fieldsDefinition
+          .filter(f => f.type !== 'actions' && recordData?.[f.field])
+          .map((f, index) =>
+            <ListItem key={f.field} selected={f.field === highlightedField}>
+              <ListItemText
+                sx={{display: "flex"}}
+                primary={`${f.headerName}:`}
+                secondary={`${recordData?.[f.field]}`}
+                primaryTypographyProps={{variant: "body1", sx: {fontWeight: "bold", width: "40%"}}}
+                secondaryTypographyProps={{variant: "body1", color: "textPrimary", width: "60%"}}
+              />
+            </ListItem>
+            )
+      }
+    </List>
+  );
+
+  const content = (
+    Array.isArray(data) ?
+      <Stack spacing={3}>
+        { data.map(renderRecord) }
+      </Stack>
+    : renderRecord(data)
+  );
 
   return(
     <ResponsiveDialog
       title={title}
       open={open}
-      width="sm"
-      withCloseButton
+      width="md"
       onClose={onClose}
     >
-      <DialogContent dividers>
-        <List dense disablePadding>
-          { fieldsDefinition.filter(f => f.type !== 'actions').map(f =>
-            <ListItem key={f.field} selected={f.field === highlightedField}>
-              <ListItemText
-                primary={`${f.headerName}:`}
-                secondary={data?.[f.field]}
-              />
-            </ListItem>
-            ) }
-        </List>
+      <DialogContent sx={{pt: 0, px: 1}}>
+        { content }
       </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Close</Button>
+        <PrintButton title={title} content={content} />
+      </DialogActions>
     </ResponsiveDialog>
   )
 }
 
-// dataSource, id, data, fieldsDefinition, query, open, onClose
-
 RecordViewer.propTypes = {
   dataSource: PropTypes.string,
-  id: PropTypes.string,
-  data: PropTypes.object,
+  data: PropTypes.oneOfType([PropTypes.object, PropTypes.arrayOf(PropTypes.object)]),
   fieldsDefinition: PropTypes.arrayOf(PropTypes.object),
+  highlightedField: PropTypes.string,
   query: PropTypes.object,
   open: PropTypes.bool,
   onClose: PropTypes.func,

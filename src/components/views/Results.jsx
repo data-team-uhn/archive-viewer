@@ -22,12 +22,6 @@ import React, { useEffect, useState } from "react";
 import {
   DataGridPro,
   GridActionsCellItem,
-  GridToolbarContainer,
-  GridToolbarColumnsButton,
-  GridToolbarFilterButton,
-  GridToolbarExportContainer,
-  GridCsvExportMenuItem,
-  GridToolbarQuickFilter,
 } from '@mui/x-data-grid-pro';
 
 import {
@@ -55,25 +49,11 @@ import {
   camelCaseToWords
 } from "../utils/utils";
 
+import CustomDataGridToolbar from "./Toolbar";
+
+import ResultsConfig from "../../config/resultsConfig";
 import QueryConfig from "../../config/queryConfig.json";
 import AppConfig from "../../config/appConfig.json";
-
-const GridToolbarExport = ({ csvOptions, printOptions, ...other }) => (
-  <GridToolbarExportContainer {...other}>
-    <GridCsvExportMenuItem options={csvOptions} />
-  </GridToolbarExportContainer>
-);
-
-function DataGridToolbar(params) {
-  return (
-    <GridToolbarContainer sx={{p:2}}>
-      <GridToolbarColumnsButton />
-      <GridToolbarFilterButton />
-      <GridToolbarExport csvOptions={params?.csvOptions}/>
-      <GridToolbarQuickFilter sx={{ml: 'auto'}}/>
-    </GridToolbarContainer>
-  );
-}
 
 // Type mapping between GraphQL and DataGrid
 const GRAPHQL_TO_DATAGRID_TYPE = {
@@ -93,8 +73,9 @@ export default function Results (props) {
   const [ resultsIntro, setResultsIntro ] = useState();
   const [ rows, setRows ] = useState();
   const [ columns, setColumns ] = useState();
-  const [ crtRecordId, setCrtRecordId ] = useState();
+  const [ crtRow, setCrtRow ] = useState();
   const [ crtField, setCrtField ] = useState();
+  const [ selected, setSelected ] = useState();
 
   const QUERY_FIELD = GRAPHQL_QUERY_ARGUMENT.name;
 
@@ -117,7 +98,7 @@ export default function Results (props) {
                 <ViewIcon/>
               </Tooltip>
             }
-            onClick={() => setCrtRecordId(params.id)}
+            onClick={() => setCrtRow(params.row)}
             label="View record"
           />,
         ]
@@ -152,9 +133,15 @@ export default function Results (props) {
 
   // -------------------------------------------------------------------------
   // Process the results of a query - record the rows
+
+  const identifierFields = ResultsConfig?.[queryDefinition?.name]?.id;
+
   const processResults = (resultsJson) => {
     const data = resultsJson?.data?.[queryDefinition?.name];
-    setRows(data?.map((line, index) => ({id: index, ...line})) || []);
+    setRows(data?.map((line, index) => ({
+      id: identifierFields?.map(fieldName => line?.[fieldName]).join(" / ") ?? index,
+      ...line
+    })) || []);
   }
 
   // -------------------------------------------------------------------------
@@ -197,24 +184,36 @@ export default function Results (props) {
               columns={columns}
               checkboxSelection
               disableRowSelectionOnClick
+              onRowSelectionModelChange={(newRowSelectionModel) => {
+                setSelected(newRowSelectionModel);
+              }}
+              rowSelectionModel={selected}
               pageSize={rows.length}
               rowsPerPageOptions={[rows.length]}
               onRowClick={(params, event) => {
                 event?.preventDefault();
-                setCrtRecordId(params.id);
+                setCrtRow(params.row);
               }}
               onCellClick={(params, event) => {
                 if (params.field !== '__check__') {
                   event.preventDefault();
-                  setCrtRecordId(params.id);
+                  setCrtRow(params.row);
                   setCrtField(params.field);
                 }
               }}
               slots={{
-                toolbar: DataGridToolbar,
+                toolbar: CustomDataGridToolbar,
               }}
               slotProps={{
-                toolbar: { csvOptions: { fileName: exportFileName } }
+                toolbar: {
+                  csvOptions: { fileName: exportFileName },
+                  dataGridMeta: {
+                    columns: columns,
+                    selected: selected,
+                    query: query?.[QUERY_FIELD],
+                    dataSource: camelCaseToWords(queryDefinition?.name)
+                  }
+                }
               }}
             />
           </div>
@@ -223,13 +222,12 @@ export default function Results (props) {
       }
       </CardContent>
     </Card>
-    { typeof(crtRecordId) != "undefined" &&
+    { typeof(crtRow) != "undefined" &&
       <RecordViewer
-        open={typeof(crtRecordId) != "undefined"}
-        onClose={() => setCrtRecordId()}
+        open={typeof(crtRow) != "undefined"}
+        onClose={() => setCrtRow()}
         dataSource={camelCaseToWords(queryDefinition?.name)}
-        id={`${crtRecordId + 1}`}
-        data={rows?.[crtRecordId]}
+        data={crtRow}
         highlightedField={crtField}
         fieldsDefinition={columns}
         query={query?.[QUERY_FIELD]}

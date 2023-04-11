@@ -1,0 +1,8 @@
+{
+  "bdmOrder": {
+    "id" : ["visitNumber", "orderNumber"]
+  },
+  "bdmAllergy": {
+    "id" : ["description"]
+  }
+}
