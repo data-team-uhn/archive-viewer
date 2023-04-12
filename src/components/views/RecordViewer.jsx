@@ -50,12 +50,21 @@ function RecordViewer(props) {
       .join(", ")
   );
 
+  const formatValue = (row, field) => {
+    let fieldDef = (
+      typeof(field) === 'string' ?
+        fieldsDefinition?.find(f => f.field === field)
+      : field
+    );
+    return fieldDef?.valueFormatter?.({value: row[fieldDef.field]}) ?? row[fieldDef?.field];
+  }
+
   const renderRecord = (recordData) => (
     <List disablePadding dense key={recordData.id}>
       <ListSubheader color="primary" sx={{borderBottom: "1px solid"}}>
         <ListItemText
           primary={`${dataSource || ''} ${recordData.id || ''}`}
-          secondary={`Created at: ${recordData.createdAt}`}
+          secondary={recordData.createdAt && `Created at: ${formatValue(recordData, 'createdAt')}`}
           primaryTypographyProps={{variant: "body1", sx: {fontWeight: "bold"}}}
         />
       </ListSubheader>
@@ -66,7 +75,7 @@ function RecordViewer(props) {
               <ListItemText
                 sx={{display: "flex"}}
                 primary={`${f.headerName}:`}
-                secondary={`${recordData?.[f.field]}`}
+                secondary={formatValue(recordData, f)}
                 primaryTypographyProps={{variant: "body1", sx: {fontWeight: "bold", width: "40%"}}}
                 secondaryTypographyProps={{variant: "body1", color: "textPrimary", width: "60%"}}
               />

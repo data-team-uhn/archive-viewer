@@ -49,6 +49,8 @@ import {
   camelCaseToWords
 } from "../utils/utils";
 
+import dayjs from "dayjs";
+
 import CustomDataGridToolbar from "./Toolbar";
 
 import ResultsConfig from "../../config/resultsConfig";
@@ -113,6 +115,13 @@ export default function Results (props) {
           valueGetter: (
             ['Date', 'Time'].includes(f.type.name) ?
               ({ value }) => value && new Date(value)
+            : undefined
+          ),
+          valueFormatter: (
+            f.type.name === 'Date' ?
+              ({ value }) => value && dayjs(value).format("YYYY-MM-DD")
+            : f.type.name === 'Time' ?
+              ({ value }) => value && dayjs(value).format("YYYY-MM-DD h:mm a")
             : undefined
           )
         }))
