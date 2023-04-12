@@ -68,7 +68,7 @@ let ArchiveApp = (props) => {
 
   let embeddedWrapper = (content) => (
     <>
-      <Paper sx={{
+      <Paper elevation={0} sx={{
          width: "fit-content",
          height: 0,
          overflow: "visible",
@@ -87,7 +87,7 @@ let ArchiveApp = (props) => {
   // 2. ArchiveViewer component (query form and results)
   // 3. Bottom appbar with information links
   let appWrapper = (content) => (
-    <Paper sx={{py: 6}}>
+    <Paper elevation={0} sx={{py: 6}}>
       <AppBar>
         <Toolbar sx={{justifyContent: "space-between"}}>
           <Link component={RouterLink} underline="none" to={`${AppConfig.pathBase}Home`} color="inherit">
@@ -123,7 +123,7 @@ let ArchiveApp = (props) => {
       <ThemeProvider theme={appTheme}>
         <CssBaseline />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Paper sx={{px: 4, py: 2, minHeight: "100vh"}}>
+          <Paper elevation={0} sx={{px: 4, py: 2, minHeight: "100vh"}}>
             <Router>
               <Routes>
                 <Route path={AppConfig.pathBase} element={appWrapper(<ArchiveViewer />)} />

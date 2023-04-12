@@ -55,11 +55,6 @@ const darkPalette = {
 const getAppTheme = (prefersDarkMode) => ((palette => ({
   palette: palette,
   components: {
-    MuiPaper: {
-      defaultProps: {
-        elevation: 0,
-      },
-    },
     MuiAppBar: {
       defaultProps: {
         color: "default",
