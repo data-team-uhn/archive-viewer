@@ -152,6 +152,12 @@ export default function Results (props) {
   const exportFileName = AppConfig.exportFileNamePrefix +
     requiredFields.map(f => query?.[QUERY_FIELD][f.name]).filter(v=>v).join("_");
 
+  const recordViewerParams = {
+    fieldsDefinition: columns,
+    query: query?.[QUERY_FIELD],
+    dataSource: camelCaseToWords(queryDefinition?.name)
+  };
+
   return (columns && <>
     <Card>
       <CardActions sx={{pb: 0}}>
@@ -208,10 +214,8 @@ export default function Results (props) {
                 toolbar: {
                   csvOptions: { fileName: exportFileName },
                   dataGridMeta: {
-                    columns: columns,
-                    selected: selected,
-                    query: query?.[QUERY_FIELD],
-                    dataSource: camelCaseToWords(queryDefinition?.name)
+                    ...recordViewerParams,
+                    selected: selected
                   }
                 }
               }}
@@ -226,11 +230,9 @@ export default function Results (props) {
       <RecordViewer
         open={typeof(crtRow) != "undefined"}
         onClose={() => setCrtRow()}
-        dataSource={camelCaseToWords(queryDefinition?.name)}
         data={crtRow}
         highlightedField={crtField}
-        fieldsDefinition={columns}
-        query={query?.[QUERY_FIELD]}
+        {...recordViewerParams}
       />
     }
   </>);

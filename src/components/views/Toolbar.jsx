@@ -45,7 +45,7 @@ function CustomPrintMenuItem(props) {
   const { hideMenu, dataGridMeta } = props;
 
   const [ data, setData ] = useState();
-  const [ columns, setColumns ] = useState();
+  const [ fields, setFields ] = useState();
 
   const isDisabled = !(dataGridMeta?.selected?.length);
 
@@ -54,10 +54,10 @@ function CustomPrintMenuItem(props) {
     const filteredSortedRowIds = gridFilteredSortedRowIdsSelector(apiRef);
     const visibleColumnFields = gridVisibleColumnFieldsSelector(apiRef);
 
-    // Update the columns
-    setColumns(visibleColumnFields
-      .map(vf => dataGridMeta.columns?.find(c => c.field === vf))
-      .filter(c => c)
+    // Update the displayed fields
+    setFields(visibleColumnFields
+      .map(vf => dataGridMeta.fieldsDefinition?.find(f => f.field === vf))
+      .filter(f => f)
     );
 
     // Format the data
@@ -81,13 +81,7 @@ function CustomPrintMenuItem(props) {
   }
 
   return (<>
-    <MenuItem
-      disabled={isDisabled}
-      onClick={() => {
-        // Launch the print preview with the selection
-        launchPreview();
-      }}
-    >
+    <MenuItem disabled={isDisabled} onClick={launchPreview}>
       View / Print selection
     </MenuItem>
     { !!data &&
@@ -96,7 +90,7 @@ function CustomPrintMenuItem(props) {
         onClose={() => { hideMenu?.(); setData()}}
         dataSource={dataGridMeta.dataSource}
         data={data}
-        fieldsDefinition={columns}
+        fieldsDefinition={fields}
         query={dataGridMeta.query}
       />
     }
