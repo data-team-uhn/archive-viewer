@@ -59,7 +59,7 @@ import { useTheme } from '@mui/material/styles';
 //
 
 const ResponsiveDialog = forwardRef((props, ref) => {
-  const { title, width, children, withCloseButton, onClose, ...rest } = props;
+  const { title, width, children, withCloseButton, onClose, disableCloseOnBackdropClick, ...rest } = props;
 
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down(width));
@@ -82,7 +82,7 @@ const ResponsiveDialog = forwardRef((props, ref) => {
       fullWidth
       fullScreen={fullScreen}
       onClose={(event, reason) => {
-        if (reason !== 'backdropClick') {
+        if (!disableCloseOnBackdropClick || reason !== 'backdropClick') {
           onClose(event);
         }
       }}
@@ -103,6 +103,7 @@ ResponsiveDialog.propTypes = {
   ]),
   withCloseButton: PropTypes.bool,
   onClose: PropTypes.func,
+  disableCloseOnBackdropClick: PropTypes.bool,
 }
 
 ResponsiveDialog.defaultProps = {
