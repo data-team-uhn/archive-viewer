@@ -53,7 +53,7 @@ import dayjs from "dayjs";
 
 import CustomDataGridToolbar from "./Toolbar";
 
-import ResultsConfig from "../../config/resultsConfig";
+import DataConfig from "../../config/dataConfig";
 import QueryConfig from "../../config/queryConfig.json";
 import AppConfig from "../../config/appConfig.json";
 
@@ -143,7 +143,7 @@ export default function Results (props) {
   // -------------------------------------------------------------------------
   // Process the results of a query - record the rows
 
-  const identifierFields = ResultsConfig?.[queryDefinition?.name]?.id;
+  const identifierFields = DataConfig?.[queryDefinition?.name]?.id;
 
   const processResults = (resultsJson) => {
     const data = resultsJson?.data?.[queryDefinition?.name];
@@ -164,7 +164,7 @@ export default function Results (props) {
   const recordViewerParams = {
     fieldsDefinition: columns,
     query: query?.[QUERY_FIELD],
-    dataSource: camelCaseToWords(queryDefinition?.name)
+    dataSource: queryDefinition?.label
   };
 
   return (columns && <>

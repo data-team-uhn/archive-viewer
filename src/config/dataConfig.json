@@ -1,8 +1,10 @@
 {
   "bdmOrder": {
+    "label" : "Medication Review - All Orders (All Visits)",
     "id" : ["visitNumber", "orderNumber"]
   },
   "bdmAllergy": {
+    "label" : "BDM Pharmacy - Allergies",
     "id" : ["description"]
   }
 }

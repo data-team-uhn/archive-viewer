@@ -28,6 +28,7 @@ import Query from "./query/Query";
 import Results from "./views/Results";
 
 import QueryConfig from "../config/queryConfig.json";
+import DataConfig from "../config/dataConfig.json";
 
 export default function ArchiveViewer (props) {
   const [ queryDefinitions, setQueryDefinitions ] = useState([]);
@@ -61,7 +62,7 @@ export default function ArchiveViewer (props) {
     // Reformat for easier processing downstream:
     qDefs.forEach(q => {
       // Add a human-readable label
-      q.label = camelCaseToWords(q.name);
+      q.label = DataConfig?.[q.name]?.label || camelCaseToWords(q.name);
       // For each argument, swap the 'type' reference for the inputFields specified by that type
       q.args?.filter(arg => arg).forEach(arg => {
         arg.inputFields = allTypes.find(type => type.name === arg.type.name)?.inputFields;
