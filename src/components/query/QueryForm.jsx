@@ -162,7 +162,7 @@ export default function QueryForm (props) {
   const renderDataSourceSection = () => (
     <QuerySection title="Legacy system" color={requireDataSource ? "primary" : undefined}>
       <Stack spacing={2} sx={{width: "100%"}}>
-        { !disableFieldsetLabels && <Typography variant="subtitle2">Select a database:</Typography> }
+        { !disableFieldsetLabels && <Typography variant="subtitle2">Select an archived record type:</Typography> }
         { renderDataSource() }
       </Stack>
     </QuerySection>
