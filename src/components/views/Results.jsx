@@ -207,6 +207,7 @@ export default function Results (props) {
                   setCrtField(params.field);
                 }
               }}
+              sx={{"& .MuiDataGrid-cell" : {cursor: "pointer"}}}
               slots={{
                 toolbar: CustomDataGridToolbar,
               }}
