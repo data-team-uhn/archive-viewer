@@ -46,7 +46,7 @@ function PrintButton(props) {
         content={() => ref.current}
       />
       <ThemeProvider theme={printTheme}>
-        <Paper ref={ref} sx={{
+        <Paper ref={ref} elevation={0} sx={{
           display: "none",
           "@media print" : {
             display: "block",
