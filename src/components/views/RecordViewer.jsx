@@ -28,7 +28,6 @@ import {
   ListItemText,
   ListSubheader,
   Stack,
-  Typography,
 } from "@mui/material";
 
 import ResponsiveDialog from "../utils/ResponsiveDialog";

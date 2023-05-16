@@ -17,7 +17,7 @@
 //  under the License.
 //
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import {
   GridToolbarContainer,
@@ -25,7 +25,6 @@ import {
   GridToolbarFilterButton,
   GridToolbarExportContainer,
   GridCsvExportMenuItem,
-  GridExportMenuItemProps,
   useGridApiContext,
   gridFilteredSortedRowIdsSelector,
   gridVisibleColumnFieldsSelector,

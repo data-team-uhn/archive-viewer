@@ -16,7 +16,6 @@
 //  specific language governing permissions and limitations
 //  under the License.
 //
-import { createTheme } from '@mui/material/styles';
 
 function addAlpha(color, opacity) {
   var _opacity = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);

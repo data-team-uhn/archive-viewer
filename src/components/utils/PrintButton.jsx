@@ -34,7 +34,7 @@ import ReactToPrint from 'react-to-print';
 import { getAppTheme } from "../appTheme";
 
 function PrintButton(props) {
-  const { title, content, trigger, buttonProps, ...rest } = props;
+  const { title, content, trigger, buttonProps } = props;
 
   const ref = useRef(null);
   const printTheme = useMemo(() => createTheme(getAppTheme()), []);
